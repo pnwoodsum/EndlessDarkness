@@ -18,12 +18,12 @@ class Player {
     init () {
         self.position = CGPoint.init(x: 0.0, y: 0.0)
         self.currentImage = "playerUp.png"
-        self.speed = 15.0
+        self.speed = 200.0
         self.health = 100.0
         
     }
     
-    func move(xDirection: Float, yDirection: Float) {
+    func move(xDirection: Float, yDirection: Float, deltaTime: Float) {
         
         let magnitude = sqrt(powf(xDirection, 2) + powf(yDirection, 2))
         
@@ -31,8 +31,8 @@ class Player {
         
         if (magnitude > 5.0) {
         
-            let xDisplacement = (xDirection / magnitude) * self.speed
-            let yDisplacement = (yDirection / magnitude) * self.speed
+            let xDisplacement = (xDirection / magnitude) * self.speed * deltaTime
+            let yDisplacement = (yDirection / magnitude) * self.speed * deltaTime
             
             position.x += CGFloat(xDisplacement)
             position.y -= CGFloat(yDisplacement)

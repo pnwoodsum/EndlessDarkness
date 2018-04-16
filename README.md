@@ -8,3 +8,4 @@ Controls
 Prototype 1:
   - Has a virtual joy stick to move the character.
   - Uses the spritekit camera to change move around a map (made of a single image)
+

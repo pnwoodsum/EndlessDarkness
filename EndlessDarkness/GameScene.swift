@@ -11,6 +11,8 @@ import SpriteKit
 class GameScene: SKScene {
     var lastUpdateTimeInterval: TimeInterval = 0
     
+    var levelManager: LevelManager?
+    
     var joystick: Bool = false
     var joyStickInitialPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
     var joyStickCurrentPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
@@ -20,7 +22,6 @@ class GameScene: SKScene {
     var player = Player()
     var skCamera: SKCameraNode?
     
-    let map = SKSpriteNode(imageNamed: "map.png")
     let playerSprite = SKSpriteNode(imageNamed: "playerUp.png")
     
     var joyStickNode = SKSpriteNode(imageNamed: "greyCircle.png")
@@ -29,14 +30,12 @@ class GameScene: SKScene {
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
         
-        map.zPosition = 0.1
-        map.position = CGPoint(x: view.frame.width / 2, y: view.frame.height / 2)
-        addChild(map)
+        self.levelManager = LevelManager(skScene: self)
         
         playerSprite.zPosition = 0.9
-        playerSprite.position = CGPoint(x: view.frame.width / 2, y: view.frame.height / 2)
+        playerSprite.position = CGPoint(x: 0.0, y: 0.0)
         player.position = playerSprite.position
-        addChild(playerSprite)
+        self.addChild(playerSprite)
         
         skCamera = SKCameraNode()
         self.camera = skCamera

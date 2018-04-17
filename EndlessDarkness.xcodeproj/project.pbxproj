@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2469BB96208571AE005067D5 /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2469BB95208571AE005067D5 /* GameData.swift */; };
 		24CEFA84207C5C1F00F3804E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA83207C5C1F00F3804E /* AppDelegate.swift */; };
 		24CEFA8A207C5C1F00F3804E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA89207C5C1F00F3804E /* GameScene.swift */; };
 		24CEFA8C207C5C1F00F3804E /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA8B207C5C1F00F3804E /* GameViewController.swift */; };
@@ -16,10 +17,10 @@
 		24CEFA9E207C624300F3804E /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA9D207C624300F3804E /* Player.swift */; };
 		24CEFAA0207C7AFB00F3804E /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA9F207C7AFB00F3804E /* Camera.swift */; };
 		3FA24E4F2080184E005BCB4A /* LevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA24E4E2080184E005BCB4A /* LevelManager.swift */; };
-		3FA24E5120801858005BCB4A /* TileData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA24E5020801858005BCB4A /* TileData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2469BB95208571AE005067D5 /* GameData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
 		24CEFA80207C5C1F00F3804E /* EndlessDarkness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EndlessDarkness.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24CEFA83207C5C1F00F3804E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24CEFA89207C5C1F00F3804E /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -31,7 +32,6 @@
 		24CEFA9D207C624300F3804E /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		24CEFA9F207C7AFB00F3804E /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		3FA24E4E2080184E005BCB4A /* LevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelManager.swift; sourceTree = "<group>"; };
-		3FA24E5020801858005BCB4A /* TileData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +70,7 @@
 				24CEFA9D207C624300F3804E /* Player.swift */,
 				24CEFA9F207C7AFB00F3804E /* Camera.swift */,
 				3FA24E4E2080184E005BCB4A /* LevelManager.swift */,
-				3FA24E5020801858005BCB4A /* TileData.swift */,
+				2469BB95208571AE005067D5 /* GameData.swift */,
 				24CEFA8D207C5C1F00F3804E /* Main.storyboard */,
 				24CEFA90207C5C1F00F3804E /* Assets.xcassets */,
 				24CEFA92207C5C1F00F3804E /* LaunchScreen.storyboard */,
@@ -155,9 +155,9 @@
 				24CEFAA0207C7AFB00F3804E /* Camera.swift in Sources */,
 				24CEFA8C207C5C1F00F3804E /* GameViewController.swift in Sources */,
 				24CEFA9E207C624300F3804E /* Player.swift in Sources */,
+				2469BB96208571AE005067D5 /* GameData.swift in Sources */,
 				3FA24E4F2080184E005BCB4A /* LevelManager.swift in Sources */,
 				24CEFA84207C5C1F00F3804E /* AppDelegate.swift in Sources */,
-				3FA24E5120801858005BCB4A /* TileData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

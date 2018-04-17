@@ -34,9 +34,10 @@ class LevelManager {
             for point in adjacentPoints {
                 if !ChunkExists(point: point) {
                     level.append(Chunk(position: point, skScene: skScene))
+                    print(level.count)
                 }
             }
-        }
+        } 
     }
     
     // Check to see which chunk is at the given point

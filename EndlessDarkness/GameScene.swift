@@ -75,7 +75,6 @@ class GameScene: SKScene {
             joyStickNode.position.x = joyStickInitialPosition.x - (view?.frame.width)! / 2
             joyStickNode.position.y = -1 * (joyStickInitialPosition.y - (view?.frame.height)! / 2)
             
-            print(joyStickNode.position.y)
         } else {
             joyStickNode.isHidden = true
         }

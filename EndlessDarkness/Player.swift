@@ -27,7 +27,7 @@ class Player {
         
         let magnitude = sqrt(powf(xDirection, 2) + powf(yDirection, 2))
         
-        print(magnitude)
+        //print(magnitude)
         
         if (magnitude > 5.0) {
         

@@ -14,6 +14,9 @@ class Player {
     var currentImage: String
     var speed: Float
     var health: Float
+    var previousChunk: Int = 0
+    var currentChunk: Int = 0
+    var currentTile: Tile?
     
     init () {
         self.position = CGPoint.init(x: 0.0, y: 0.0)

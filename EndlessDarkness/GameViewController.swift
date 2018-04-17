@@ -27,6 +27,11 @@ class GameViewController: UIViewController {
     }
 }
 
+// Define the addition of two CGPoints for the esake of convenience
+func +(leftHandSide: CGPoint, rightHandSide: CGPoint) -> CGPoint {
+    return CGPoint(x: leftHandSide.x + rightHandSide.x, y: leftHandSide.y + rightHandSide.y)
+}
+
 // Define the subtraction of two CGPoints for the esake of convenience
 func -(leftHandSide: CGPoint, rightHandSide: CGPoint) -> CGPoint {
     return CGPoint(x: leftHandSide.x - rightHandSide.x, y: leftHandSide.y - rightHandSide.y)

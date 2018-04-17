@@ -94,7 +94,15 @@ class GameScene: SKScene {
             playerSprite.zRotation = CGFloat(atan2f(-xDirection, -yDirection))
             
             player.move(xDirection: xDirection, yDirection: yDirection, deltaTime: Float(deltaTime))
-            levelManager?.UpdateMap(point: player.position, skScene: self)
+            
+            let tempChunk = levelManager?.ChunkContainsPoint(point: player.position)
+            
+            player.currentChunk = (tempChunk?.chunkIndex)!
+            if player.currentChunk != player.previousChunk {
+                levelManager?.UpdateMap(point: player.position, skScene: self)
+            }
+            player.previousChunk = player.currentChunk
+            
         }
     }
     

@@ -15,12 +15,12 @@ class LevelManager {
     
     // Load 9 chunks at the start
     init(skScene: SKScene) {
-        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene))
+        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, chunkIndex: level.count))
         
         let adjacentChunks = GetAdjacentPositions(point: CGPoint(x: 0, y: 0), displacement: Double(GameData.ChunkSize))
         
         for position in adjacentChunks {
-            level.append(Chunk(position: position, skScene: skScene))
+            level.append(Chunk(position: position, skScene: skScene, chunkIndex: level.count))
             
         }
         
@@ -33,7 +33,7 @@ class LevelManager {
             
             for point in adjacentPoints {
                 if !ChunkExists(point: point) {
-                    level.append(Chunk(position: point, skScene: skScene))
+                    level.append(Chunk(position: point, skScene: skScene, chunkIndex: level.count))
                     print(level.count)
                 }
             }
@@ -101,9 +101,10 @@ class LevelManager {
 // Chunk that contains tiles based on the number of tiles per chunk
 struct Chunk {
     var position: CGPoint
+    var chunkIndex: Int
     var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.TilesPerChunk), count: GameData.TilesPerChunk)
     
-    init(position: CGPoint, skScene: SKScene) {
+    init(position: CGPoint, skScene: SKScene, chunkIndex: Int) {
         self.position = position
         let leftSide = Float(position.x) - GameData.ChunkSize / 2
         let bottomSide = Float(position.y) - GameData.ChunkSize / 2
@@ -117,6 +118,8 @@ struct Chunk {
                 self.tiles[i][j] = Tile(type: randomInt, position: tilePosition, skScene: skScene)
             }
         }
+        
+        self.chunkIndex = chunkIndex
     }
 }
 

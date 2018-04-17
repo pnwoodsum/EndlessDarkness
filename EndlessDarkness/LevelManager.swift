@@ -13,23 +13,91 @@ import SpriteKit
 class LevelManager {
     var level = [Chunk]()
     
+    // Load 9 chunks at the start
     init(skScene: SKScene) {
         level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: Double(GameData.ChunkSize), y: 0.0), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: Double(GameData.ChunkSize), y: -Double(GameData.ChunkSize)), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: 0.0, y: -Double(GameData.ChunkSize)), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: -Double(GameData.ChunkSize), y: -Double(GameData.ChunkSize)), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: -Double(GameData.ChunkSize), y: 0.0), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: -Double(GameData.ChunkSize), y: Double(GameData.ChunkSize)), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: 0.0, y: Double(GameData.ChunkSize)), skScene: skScene))
-        level.append(Chunk(position: CGPoint(x: Double(GameData.ChunkSize), y: Double(GameData.ChunkSize)), skScene: skScene))
+        
+        let adjacentChunks = GetAdjacentPositions(point: CGPoint(x: 0, y: 0), displacement: Double(GameData.ChunkSize))
+        
+        for position in adjacentChunks {
+            level.append(Chunk(position: position, skScene: skScene))
+            
+        }
+        
     }
     
-    func ContainsPoint(point: CGPoint) {
+    // Create adjacent chunks if they do not exist
+    func UpdateMap(point: CGPoint, skScene: SKScene) {
+        if let currentChunk: Chunk = ChunkContainsPoint(point: point) {
+            let adjacentPoints = GetAdjacentPositions(point: currentChunk.position, displacement: Double(GameData.ChunkSize))
+            
+            for point in adjacentPoints {
+                if !ChunkExists(point: point) {
+                    level.append(Chunk(position: point, skScene: skScene))
+                }
+            }
+        }
+    }
+    
+    // Check to see which chunk is at the given point
+    func ChunkContainsPoint(point: CGPoint) -> Chunk? {
+        for chunk in level {
+            if point.x > ((chunk.position.x - CGFloat(GameData.ChunkSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkSize) / 2)) {
+                if point.y > ((chunk.position.y - CGFloat(GameData.ChunkSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkSize) / 2)) {
+                    return chunk
+                }
+            }
+        }
         
+        return nil
+    }
+    
+    // Check to see if a chunk exists at a given point
+    func ChunkExists(point: CGPoint) -> Bool {
+        for chunk in level {
+            if point.x > ((chunk.position.x - CGFloat(GameData.ChunkSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkSize) / 2)) {
+                if point.y > ((chunk.position.y - CGFloat(GameData.ChunkSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkSize) / 2)) {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    // Check to see which tile contains the given point
+    func TileContainsPoint(chunk: Chunk, point: CGPoint) -> Tile? {
+        for tileRows in chunk.tiles {
+            for tile in tileRows {
+                if point.x > ((tile.type.position.x - CGFloat(GameData.ChunkSize) / 2)) && (point.x < (tile.type.position.x + CGFloat(GameData.ChunkSize) / 2)) {
+                    if point.y > ((tile.type.position.y - CGFloat(GameData.ChunkSize) / 2)) && (point.y < (tile.type.position.y + CGFloat(GameData.ChunkSize) / 2)) {
+                        return tile
+                    }
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    // Return array of points of adjects positions
+    func GetAdjacentPositions(point: CGPoint, displacement: Double) -> [CGPoint] {
+        var adjacentPoints = [CGPoint]()
+        
+        adjacentPoints.append(point + CGPoint(x: displacement, y: 0.0))
+        adjacentPoints.append(point + CGPoint(x: displacement, y: -displacement))
+        adjacentPoints.append(point + CGPoint(x: 0.0, y: -displacement))
+        adjacentPoints.append(point + CGPoint(x: -displacement, y: -displacement))
+        adjacentPoints.append(point + CGPoint(x: -displacement, y: 0.0))
+        adjacentPoints.append(point + CGPoint(x: -displacement, y: displacement))
+        adjacentPoints.append(point + CGPoint(x: 0.0, y: displacement))
+        adjacentPoints.append(point + CGPoint(x: displacement, y: displacement))
+
+        return adjacentPoints
     }
 }
 
+// Chunk that contains tiles based on the number of tiles per chunk
 struct Chunk {
     var position: CGPoint
     var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.TilesPerChunk), count: GameData.TilesPerChunk)
@@ -51,7 +119,8 @@ struct Chunk {
     }
 }
 
-
+// Contains information about each unique tile.
+// Information is created when initialized based on the given type.
 struct Tile {
     var type: SKSpriteNode
     

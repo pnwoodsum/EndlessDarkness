@@ -9,7 +9,7 @@
 import Foundation
 
 struct GameData {
-    static var ChunkSize: Float = 1024
-    static var TilesPerChunk: Int = 8 // tiles per chunk along one dimension
-    
+    static var ChunkSize: Float = 1024 // number of pixels per chunk
+    static var TilesPerChunk: Int = 16 // tiles per chunk along one dimension
+        
 }

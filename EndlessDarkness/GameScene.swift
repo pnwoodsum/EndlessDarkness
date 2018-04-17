@@ -95,6 +95,7 @@ class GameScene: SKScene {
             playerSprite.zRotation = CGFloat(atan2f(-xDirection, -yDirection))
             
             player.move(xDirection: xDirection, yDirection: yDirection, deltaTime: Float(deltaTime))
+            levelManager?.UpdateMap(point: player.position, skScene: self)
         }
     }
     

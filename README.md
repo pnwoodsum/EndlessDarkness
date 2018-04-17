@@ -16,3 +16,18 @@ Going forward:
   - Character progress (experience through collectibles?)
   - Save Data on close
   - More from initial game doc...
+
+
+Prototype 2:
+  - Implemented infinitely generating tile map
+  - Added several helper functions and a swift file to hold game variables
+  
+![alt text](https://github.com/pnwoodsum/IGME340_Project2/blob/master/Prototype2/Screen%20Shot%202018-04-16%20at%2011.52.40%20PM.png)
+
+Going forward:
+  - Character progress
+  - Save and load data
+  - Optimize map loading/unloading
+  - Simple enemies and combat
+  - Sounds
+  - Art

@@ -129,19 +129,23 @@ struct Tile {
     var type: SKSpriteNode
     
     init () {
-        self.type = SKSpriteNode(imageNamed: "grass0")
+        self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
     }
     
     init (type: UInt32, position: CGPoint, skScene: SKScene ) {
         switch type {
         case 0:
-            self.type = SKSpriteNode(imageNamed: "grass0")
+            //self.type = SKSpriteNode(imageNamed: "grass0")
+            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
         case 1:
-            self.type = SKSpriteNode(imageNamed: "grass1")
+            //self.type = SKSpriteNode(imageNamed: "grass1")
+            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[1])
         case 2:
-            self.type = SKSpriteNode(imageNamed: "grass2")
+            //self.type = SKSpriteNode(imageNamed: "grass2")
+            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[2])
         default:
-            self.type = SKSpriteNode(imageNamed: "grass0")
+            //self.type = SKSpriteNode(imageNamed: "grass0")
+            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
         }
         
         self.type.scale(to: CGSize(width: CGFloat(GameData.ChunkSize / Float(GameData.TilesPerChunk)), height: CGFloat(GameData.ChunkSize / Float(GameData.TilesPerChunk))))

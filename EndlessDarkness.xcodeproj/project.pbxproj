@@ -17,6 +17,7 @@
 		24CEFA9E207C624300F3804E /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA9D207C624300F3804E /* Player.swift */; };
 		24CEFAA0207C7AFB00F3804E /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA9F207C7AFB00F3804E /* Camera.swift */; };
 		3FA24E4F2080184E005BCB4A /* LevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA24E4E2080184E005BCB4A /* LevelManager.swift */; };
+		3FB3C1652089530F0083F6EB /* BackgroundTextures.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 3FB3C1642089530F0083F6EB /* BackgroundTextures.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		24CEFA9D207C624300F3804E /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		24CEFA9F207C7AFB00F3804E /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		3FA24E4E2080184E005BCB4A /* LevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelManager.swift; sourceTree = "<group>"; };
+		3FB3C1642089530F0083F6EB /* BackgroundTextures.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = BackgroundTextures.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 				2469BB95208571AE005067D5 /* GameData.swift */,
 				24CEFA8D207C5C1F00F3804E /* Main.storyboard */,
 				24CEFA90207C5C1F00F3804E /* Assets.xcassets */,
+				3FB3C1642089530F0083F6EB /* BackgroundTextures.atlas */,
 				24CEFA92207C5C1F00F3804E /* LaunchScreen.storyboard */,
 				24CEFA95207C5C1F00F3804E /* Info.plist */,
 			);
@@ -141,6 +144,7 @@
 				24CEFA8F207C5C1F00F3804E /* Main.storyboard in Resources */,
 				24CEFA91207C5C1F00F3804E /* Assets.xcassets in Resources */,
 				24CEFA94207C5C1F00F3804E /* LaunchScreen.storyboard in Resources */,
+				3FB3C1652089530F0083F6EB /* BackgroundTextures.atlas in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

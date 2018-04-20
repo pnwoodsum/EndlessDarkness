@@ -12,15 +12,16 @@ import SpriteKit
 
 class LevelManager {
     var level = [Chunk]()
+    var collectibleManager = CollectibleManager()
     
     // Load 9 chunks at the start
     init(skScene: SKScene) {
-        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, chunkIndex: level.count))
+        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager))
         
         let adjacentChunks = GetAdjacentPositions(point: CGPoint(x: 0, y: 0), displacement: Double(GameData.ChunkSize))
         
         for position in adjacentChunks {
-            level.append(Chunk(position: position, skScene: skScene, chunkIndex: level.count))
+            level.append(Chunk(position: position, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager))
             
         }
         
@@ -33,8 +34,7 @@ class LevelManager {
             
             for point in adjacentPoints {
                 if !ChunkExists(point: point) {
-                    level.append(Chunk(position: point, skScene: skScene, chunkIndex: level.count))
-                    print(level.count)
+                    level.append(Chunk(position: point, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager))
                 }
             }
         } 
@@ -104,7 +104,7 @@ struct Chunk {
     var chunkIndex: Int
     var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.TilesPerChunk), count: GameData.TilesPerChunk)
     
-    init(position: CGPoint, skScene: SKScene, chunkIndex: Int) {
+    init(position: CGPoint, skScene: SKScene, chunkIndex: Int, collectibleManager: CollectibleManager) {
         self.position = position
         let leftSide = Float(position.x) - GameData.ChunkSize / 2
         let bottomSide = Float(position.y) - GameData.ChunkSize / 2
@@ -115,7 +115,7 @@ struct Chunk {
                 var tilePosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
                 tilePosition.x = CGFloat(leftSide + (Float(i) * (GameData.ChunkSize / Float(GameData.TilesPerChunk))))
                 tilePosition.y = CGFloat(bottomSide + (Float(j) * (GameData.ChunkSize / Float(GameData.TilesPerChunk))))
-                self.tiles[i][j] = Tile(type: randomInt, position: tilePosition, skScene: skScene)
+                self.tiles[i][j] = Tile(type: randomInt, position: tilePosition, skScene: skScene, collectibleManager: collectibleManager)
             }
         }
         
@@ -132,19 +132,24 @@ struct Tile {
         self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
     }
     
-    init (type: UInt32, position: CGPoint, skScene: SKScene ) {
+    init (type: UInt32, position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager) {
         switch type {
         case 0:
-            //self.type = SKSpriteNode(imageNamed: "grass0")
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
         case 1:
-            //self.type = SKSpriteNode(imageNamed: "grass1")
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[1])
         case 2:
-            //self.type = SKSpriteNode(imageNamed: "grass2")
+            
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[2])
+            
+            let randomInt = arc4random_uniform(_:20)
+            
+            if randomInt < 2 {
+                //let _ = Animation(animatedAtlasName: "GoldCoinAnimation", position: position, skScene: skScene)
+                collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
+            }
+            
         default:
-            //self.type = SKSpriteNode(imageNamed: "grass0")
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
         }
         

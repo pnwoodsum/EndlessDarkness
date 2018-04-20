@@ -12,6 +12,7 @@ class GameScene: SKScene {
     var lastUpdateTimeInterval: TimeInterval = 0
     
     var levelManager: LevelManager?
+    var collectibleManager: CollectibleManager?
     
     var joystick: Bool = false
     var joyStickInitialPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
@@ -26,6 +27,7 @@ class GameScene: SKScene {
     
     var joyStickNode = SKSpriteNode(imageNamed: "greyCircle.png")
     let positionLabel = SKLabelNode(text: "Position: " )
+    let goldLabel = SKLabelNode(text: "Gold: ")
     
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
@@ -53,6 +55,12 @@ class GameScene: SKScene {
         positionLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         skCamera?.addChild(positionLabel)
         
+        goldLabel.zPosition = 1.0
+        goldLabel.position = CGPoint(x: 10.0, y: 100.0)
+        goldLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
+        goldLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        skCamera?.addChild(goldLabel)
+        
 
     }
     
@@ -70,7 +78,6 @@ class GameScene: SKScene {
         
         if (joystick) {
             joyStickNode.isHidden = false
-            //joyStickNode.position = convertPoint(fromView: joyStickInitialPosition)
 
             joyStickNode.position.x = joyStickInitialPosition.x - (view?.frame.width)! / 2
             joyStickNode.position.y = -1 * (joyStickInitialPosition.y - (view?.frame.height)! / 2)
@@ -79,9 +86,11 @@ class GameScene: SKScene {
             joyStickNode.isHidden = true
         }
         
-        //positionLabel.position = convertPoint(fromView: CGPoint(x: 10, y: 20))
         positionLabel.position = CGPoint(x: 10 - (view?.frame.width)! / 2, y: -20 + (view?.frame.height)! / 2)
         positionLabel.text = "Position: (\(Int(player.position.x)), \(Int(player.position.y)))"
+        
+        goldLabel.position = CGPoint(x: 10 - (view?.frame.width)! / 2, y: -100 + (view?.frame.height)! / 2)
+        goldLabel.text = "Gold: (\(player.money))"
         
         playerSprite.position = player.position
         
@@ -104,6 +113,8 @@ class GameScene: SKScene {
             player.previousChunk = player.currentChunk
             
         }
+        
+        self.levelManager?.collectibleManager.CheckCollisions(playerSprite: playerSprite, player: player)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

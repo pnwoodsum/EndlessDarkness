@@ -21,18 +21,13 @@ class GameViewController: UIViewController {
             
             let skView = view 
             
+            skView.showsFPS = true
+            skView.showsNodeCount = true
+            
             skView.presentScene(scene)
             
         }
     }
 }
 
-// Define the addition of two CGPoints for the esake of convenience
-func +(leftHandSide: CGPoint, rightHandSide: CGPoint) -> CGPoint {
-    return CGPoint(x: leftHandSide.x + rightHandSide.x, y: leftHandSide.y + rightHandSide.y)
-}
 
-// Define the subtraction of two CGPoints for the esake of convenience
-func -(leftHandSide: CGPoint, rightHandSide: CGPoint) -> CGPoint {
-    return CGPoint(x: leftHandSide.x - rightHandSide.x, y: leftHandSide.y - rightHandSide.y)
-}

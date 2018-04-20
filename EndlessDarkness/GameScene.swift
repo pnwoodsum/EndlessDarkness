@@ -104,6 +104,8 @@ class GameScene: SKScene {
             
             player.move(xDirection: xDirection, yDirection: yDirection, deltaTime: Float(deltaTime))
             
+            levelManager?.CheckPlayerCollisions(player: player)
+            
             let tempChunk = levelManager?.ChunkContainsPoint(point: player.position)
             
             player.currentChunk = (tempChunk?.chunkIndex)!

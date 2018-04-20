@@ -18,11 +18,12 @@ class Player {
     var previousChunk: Int = 0
     var currentChunk: Int = 0
     var currentTile: Tile?
+    var collisionRadius: Float = 15.0
     
     init () {
         self.position = CGPoint.init(x: 0.0, y: 0.0)
         self.currentImage = "playerUp.png"
-        self.speed = 250.0
+        self.speed = 200.0
         self.health = 100.0
         self.money = 0
         

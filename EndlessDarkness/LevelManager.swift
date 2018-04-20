@@ -27,6 +27,56 @@ class LevelManager {
         
     }
     
+    func CheckPlayerCollisions(player: Player) {
+        if let currentChunk: Chunk = ChunkContainsPoint(point: player.position) {
+            CheckCollisionsInChunk(currentChunk: currentChunk, player: player)
+        }
+        
+        let adjacentPoints = GetAdjacentPositions(point: player.position, displacement: Double(GameData.ChunkSize))
+        0
+        for point in adjacentPoints {
+            if let adjacentChunk = ChunkContainsPoint(point: point) {
+                CheckCollisionsInChunk(currentChunk: adjacentChunk, player: player)
+            }
+        }
+    }
+    
+    func CheckCollisionsInChunk(currentChunk: Chunk, player: Player) {
+        for i in 0...GameData.TilesPerChunk - 1 {
+            for j in 0...GameData.TilesPerChunk - 1 {
+                if !currentChunk.tiles[i][j].pathable {
+                    let xDifference = Float(currentChunk.tiles[i][j].type.position.x - player.position.x)
+                    let yDifference = Float(currentChunk.tiles[i][j].type.position.y - player.position.y)
+                    
+                    let magnitude = sqrt(powf(xDifference, 2) + powf(yDifference, 2))
+                    
+                    let xDirection = (xDifference / magnitude)
+                    let yDirection = (yDifference / magnitude)
+                    
+                    let closestX = CGFloat(xDirection * player.collisionRadius)
+                    let closestY = CGFloat(yDirection * player.collisionRadius)
+                    
+                    let closestPlayerPosition = player.position + CGPoint(x: closestX, y: closestY)
+                    
+                    if currentChunk.tiles[i][j].type.contains(closestPlayerPosition) {
+                        if abs(closestX) > abs(closestY) {
+                            let xDisplacement =  abs(currentChunk.tiles[i][j].type.position.x) - abs(closestPlayerPosition.x)
+                            let absXDisplacement = CGFloat(GameData.TileSize) / 2 - abs(xDisplacement)
+                            print(abs(currentChunk.tiles[i][j].type.position.x) - abs(closestPlayerPosition.x))
+                            player.position.x += absXDisplacement * CGFloat(-xDirection)
+                        }
+                        else {
+                            let yDisplacement = abs(currentChunk.tiles[i][j].type.position.y) - abs(closestPlayerPosition.y)
+                            let absYDisplacement = CGFloat(GameData.TileSize) / 2 - abs(yDisplacement)
+                            print(abs(currentChunk.tiles[i][j].type.position.y) - abs(closestPlayerPosition.y))
+                            player.position.y += absYDisplacement * CGFloat(-yDirection)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     // Create adjacent chunks if they do not exist
     func UpdateMap(point: CGPoint, skScene: SKScene) {
         if let currentChunk: Chunk = ChunkContainsPoint(point: point) {
@@ -111,7 +161,7 @@ struct Chunk {
         
         for i in 0...GameData.TilesPerChunk - 1 {
             for j in 0...GameData.TilesPerChunk - 1 {
-                let randomInt = arc4random_uniform(_:3)
+                let randomInt = arc4random_uniform(_:4)
                 var tilePosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
                 tilePosition.x = CGFloat(leftSide + (Float(i) * (GameData.ChunkSize / Float(GameData.TilesPerChunk))))
                 tilePosition.y = CGFloat(bottomSide + (Float(j) * (GameData.ChunkSize / Float(GameData.TilesPerChunk))))
@@ -127,30 +177,41 @@ struct Chunk {
 // Information is created when initialized based on the given type.
 struct Tile {
     var type: SKSpriteNode
+    var pathable: Bool
     
     init () {
         self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+        self.pathable = true
     }
     
     init (type: UInt32, position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager) {
         switch type {
         case 0:
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+            pathable = true
         case 1:
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[1])
+            pathable = true
         case 2:
             
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[2])
+            pathable = true
+
             
             let randomInt = arc4random_uniform(_:20)
             
             if randomInt < 2 {
-                //let _ = Animation(animatedAtlasName: "GoldCoinAnimation", position: position, skScene: skScene)
+
                 collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
             }
             
+        case 3:
+            self.type = SKSpriteNode(texture: GameData.RockTextures[0])
+            pathable = false
+            
         default:
             self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+            pathable = true
         }
         
         self.type.scale(to: CGSize(width: CGFloat(GameData.ChunkSize / Float(GameData.TilesPerChunk)), height: CGFloat(GameData.ChunkSize / Float(GameData.TilesPerChunk))))

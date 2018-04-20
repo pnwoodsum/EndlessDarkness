@@ -25,6 +25,7 @@ class CollectibleManager {
         for i in 0...collectibles.count - 1 {
             if (playerSprite.intersects(collectibles[i].node!)) {
                 self.CollideWithCollectible(type: collectibles[i].type, player: player, index: i)
+                return
             }
         }
     }
@@ -34,7 +35,7 @@ class CollectibleManager {
         case "GoldCoin":
             player.money += 1
             RemoveCollectible(removeAtIndex: index)
-            print(collectibles)
+            
         default:
             return
         }
@@ -44,6 +45,7 @@ class CollectibleManager {
         for i in removeAtIndex + 1...self.collectibles.count - 1 {
             collectibles[i].index -= 1
         }
+        
         collectibles[removeAtIndex].node?.removeFromParent()
         collectibles.remove(at: removeAtIndex)
     }

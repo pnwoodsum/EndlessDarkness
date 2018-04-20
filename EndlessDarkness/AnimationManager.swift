@@ -9,16 +9,6 @@
 import Foundation
 import SpriteKit
 
-//class AnimationManager {
-//    func CreateAnimation(animatedAtlasName: String, position: CGPoint, skScene: SKScene) -> Animation {
-//        var myAnimation: Animation = Animation()
-//
-//
-//        return myAnimation!
-//    }
-//
-//}
-
 class Animation {
     var animationNode: SKSpriteNode
     var animationFrames: [SKTexture] = []

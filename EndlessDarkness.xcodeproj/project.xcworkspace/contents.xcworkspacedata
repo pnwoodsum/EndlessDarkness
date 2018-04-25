@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:EndlessDarkness.xcodeproj">
+      location = "group:/Users/student/Documents/GitHub/IGME340_Project2/EndlessDarkness/ViewController.swift">
+   </FileRef>
+   <FileRef
+      location = "self:">
    </FileRef>
 </Workspace>

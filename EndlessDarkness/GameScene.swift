@@ -29,20 +29,27 @@ class GameScene: SKScene {
     let positionLabel = SKLabelNode(text: "Position: " )
     let goldLabel = SKLabelNode(text: "Gold: ")
     
+    var seed: UInt32 = 3079430158
+    
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
         
         self.levelManager = LevelManager(skScene: self)
         
+        //seed = arc4random()
+        
+        // Initialize player sprite and class
         playerSprite.zPosition = 0.9
         playerSprite.position = CGPoint(x: 0.0, y: 0.0)
         player.position = playerSprite.position
         self.addChild(playerSprite)
         
+        // Initialize camera
         skCamera = SKCameraNode()
         self.camera = skCamera
         self.addChild(skCamera!)
         
+        // Initialize UI elements
         joyStickNode.zPosition = 1.0
         joyStickNode.position = CGPoint(x: 10.0, y: 10.0)
         skCamera?.addChild(joyStickNode)
@@ -156,8 +163,6 @@ class GameScene: SKScene {
             if (position.x < self.frame.width / 2) {
                 joystick = false
             }
-            
         }
     }
-    
 }

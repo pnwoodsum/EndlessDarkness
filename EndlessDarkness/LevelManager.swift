@@ -33,7 +33,7 @@ class LevelManager {
         }
         
         let adjacentPoints = GetAdjacentPositions(point: player.position, displacement: Double(GameData.ChunkSize))
-        0
+        
         for point in adjacentPoints {
             if let adjacentChunk = ChunkContainsPoint(point: point) {
                 CheckCollisionsInChunk(currentChunk: adjacentChunk, player: player)
@@ -62,13 +62,11 @@ class LevelManager {
                         if abs(closestX) > abs(closestY) {
                             let xDisplacement =  abs(currentChunk.tiles[i][j].type.position.x) - abs(closestPlayerPosition.x)
                             let absXDisplacement = CGFloat(GameData.TileSize) / 2 - abs(xDisplacement)
-                            print(abs(currentChunk.tiles[i][j].type.position.x) - abs(closestPlayerPosition.x))
                             player.position.x += absXDisplacement * CGFloat(-xDirection)
                         }
                         else {
                             let yDisplacement = abs(currentChunk.tiles[i][j].type.position.y) - abs(closestPlayerPosition.y)
                             let absYDisplacement = CGFloat(GameData.TileSize) / 2 - abs(yDisplacement)
-                            print(abs(currentChunk.tiles[i][j].type.position.y) - abs(closestPlayerPosition.y))
                             player.position.y += absYDisplacement * CGFloat(-yDirection)
                         }
                     }

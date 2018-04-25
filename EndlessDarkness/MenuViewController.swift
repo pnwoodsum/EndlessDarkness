@@ -10,23 +10,25 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController {
+class MenuViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
             
-            let scene = GameScene(size: view.frame.size)
+            let scene = MenuScene(size: view.frame.size)
             
-            let skView = view 
+            let skView = view
             
             skView.showsFPS = true
             skView.showsNodeCount = true
             
             skView.presentScene(scene)
+            
         }
     }
 }
+
 
 

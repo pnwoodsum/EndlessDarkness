@@ -10,9 +10,9 @@ import Foundation
 import SpriteKit
 
 struct GameData {
-    static var ChunkSize: Float = 1024 // number of pixels per side
-    static var TileSize: Float = 64 // number of pixels per tile side
-    static var TilesPerChunk: Int = 16 // tiles per chunk along one dimension
+    static var ChunkPixelSize: Float = 2048 // number of pixels per side
+    static var TilePixelSize: Float = 64 // number of pixels per tile side
+    static var ChunkTileWidth: Int = 32 // tiles per chunk along one dimension
     
     static var BackgroundTextures: [SKTexture] = [
         SKTexture(imageNamed: "grass.png"),

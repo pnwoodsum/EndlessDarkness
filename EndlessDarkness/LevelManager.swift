@@ -9,22 +9,26 @@
 import Foundation
 import UIKit
 import SpriteKit
+import GameplayKit
 
 class LevelManager {
     var level = [Chunk]()
     var collectibleManager = CollectibleManager()
+    let perlinNoiseObject: GKNoise?
     
     // Load 9 chunks at the start
-    init(skScene: SKScene) {
-        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager))
+    init(skScene: SKScene, seed: UInt32) {
         
-        let adjacentChunks = GetAdjacentPositions(point: CGPoint(x: 0, y: 0), displacement: Double(GameData.ChunkSize))
+        perlinNoiseObject = GKNoise(GKPerlinNoiseSource(frequency: 0.15, octaveCount: 3, persistence: 1, lacunarity: 1, seed: Int32(seed)))
+        
+        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
+        
+        let adjacentChunks = GetAdjacentPositions(point: CGPoint(x: 0, y: 0), displacement: Double(GameData.ChunkPixelSize))
         
         for position in adjacentChunks {
-            level.append(Chunk(position: position, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager))
+            level.append(Chunk(position: position, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
             
         }
-        
     }
     
     func CheckPlayerCollisions(player: Player) {
@@ -32,7 +36,7 @@ class LevelManager {
             CheckCollisionsInChunk(currentChunk: currentChunk, player: player)
         }
         
-        let adjacentPoints = GetAdjacentPositions(point: player.position, displacement: Double(GameData.ChunkSize))
+        let adjacentPoints = GetAdjacentPositions(point: player.position, displacement: Double(GameData.ChunkPixelSize))
         
         for point in adjacentPoints {
             if let adjacentChunk = ChunkContainsPoint(point: point) {
@@ -42,11 +46,11 @@ class LevelManager {
     }
     
     func CheckCollisionsInChunk(currentChunk: Chunk, player: Player) {
-        for i in 0...GameData.TilesPerChunk - 1 {
-            for j in 0...GameData.TilesPerChunk - 1 {
+        for i in 0...GameData.ChunkTileWidth - 1 {
+            for j in 0...GameData.ChunkTileWidth - 1 {
                 if !currentChunk.tiles[i][j].pathable {
-                    let xDifference = Float(currentChunk.tiles[i][j].type.position.x - player.position.x)
-                    let yDifference = Float(currentChunk.tiles[i][j].type.position.y - player.position.y)
+                    let xDifference = Float(currentChunk.tiles[i][j].tileTexture.position.x - player.position.x)
+                    let yDifference = Float(currentChunk.tiles[i][j].tileTexture.position.y - player.position.y)
                     
                     let magnitude = sqrt(powf(xDifference, 2) + powf(yDifference, 2))
                     
@@ -58,15 +62,15 @@ class LevelManager {
                     
                     let closestPlayerPosition = player.position + CGPoint(x: closestX, y: closestY)
                     
-                    if currentChunk.tiles[i][j].type.contains(closestPlayerPosition) {
+                    if currentChunk.tiles[i][j].tileTexture.contains(closestPlayerPosition) {
                         if abs(closestX) > abs(closestY) {
-                            let xDisplacement =  abs(currentChunk.tiles[i][j].type.position.x) - abs(closestPlayerPosition.x)
-                            let absXDisplacement = CGFloat(GameData.TileSize) / 2 - abs(xDisplacement)
+                            let xDisplacement =  abs(currentChunk.tiles[i][j].tileTexture.position.x) - abs(closestPlayerPosition.x)
+                            let absXDisplacement = CGFloat(GameData.TilePixelSize) / 2 - abs(xDisplacement)
                             player.position.x += absXDisplacement * CGFloat(-xDirection)
                         }
                         else {
-                            let yDisplacement = abs(currentChunk.tiles[i][j].type.position.y) - abs(closestPlayerPosition.y)
-                            let absYDisplacement = CGFloat(GameData.TileSize) / 2 - abs(yDisplacement)
+                            let yDisplacement = abs(currentChunk.tiles[i][j].tileTexture.position.y) - abs(closestPlayerPosition.y)
+                            let absYDisplacement = CGFloat(GameData.TilePixelSize) / 2 - abs(yDisplacement)
                             player.position.y += absYDisplacement * CGFloat(-yDirection)
                         }
                     }
@@ -78,11 +82,11 @@ class LevelManager {
     // Create adjacent chunks if they do not exist
     func UpdateMap(point: CGPoint, skScene: SKScene) {
         if let currentChunk: Chunk = ChunkContainsPoint(point: point) {
-            let adjacentPoints = GetAdjacentPositions(point: currentChunk.position, displacement: Double(GameData.ChunkSize))
+            let adjacentPoints = GetAdjacentPositions(point: currentChunk.position, displacement: Double(GameData.ChunkPixelSize))
             
             for point in adjacentPoints {
                 if !ChunkExists(point: point) {
-                    level.append(Chunk(position: point, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager))
+                    level.append(Chunk(position: point, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
                 }
             }
         } 
@@ -91,8 +95,8 @@ class LevelManager {
     // Check to see which chunk is at the given point
     func ChunkContainsPoint(point: CGPoint) -> Chunk? {
         for chunk in level {
-            if point.x > ((chunk.position.x - CGFloat(GameData.ChunkSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkSize) / 2)) {
-                if point.y > ((chunk.position.y - CGFloat(GameData.ChunkSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkSize) / 2)) {
+            if point.x > ((chunk.position.x - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkPixelSize) / 2)) {
+                if point.y > ((chunk.position.y - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkPixelSize) / 2)) {
                     return chunk
                 }
             }
@@ -104,8 +108,8 @@ class LevelManager {
     // Check to see if a chunk exists at a given point
     func ChunkExists(point: CGPoint) -> Bool {
         for chunk in level {
-            if point.x > ((chunk.position.x - CGFloat(GameData.ChunkSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkSize) / 2)) {
-                if point.y > ((chunk.position.y - CGFloat(GameData.ChunkSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkSize) / 2)) {
+            if point.x > ((chunk.position.x - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkPixelSize) / 2)) {
+                if point.y > ((chunk.position.y - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkPixelSize) / 2)) {
                     return true
                 }
             }
@@ -118,8 +122,8 @@ class LevelManager {
     func TileContainsPoint(chunk: Chunk, point: CGPoint) -> Tile? {
         for tileRows in chunk.tiles {
             for tile in tileRows {
-                if point.x > ((tile.type.position.x - CGFloat(GameData.ChunkSize) / 2)) && (point.x < (tile.type.position.x + CGFloat(GameData.ChunkSize) / 2)) {
-                    if point.y > ((tile.type.position.y - CGFloat(GameData.ChunkSize) / 2)) && (point.y < (tile.type.position.y + CGFloat(GameData.ChunkSize) / 2)) {
+                if point.x > ((tile.tileTexture.position.x - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.x < (tile.tileTexture.position.x + CGFloat(GameData.ChunkPixelSize) / 2)) {
+                    if point.y > ((tile.tileTexture.position.y - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.y < (tile.tileTexture.position.y + CGFloat(GameData.ChunkPixelSize) / 2)) {
                         return tile
                     }
                 }
@@ -150,20 +154,34 @@ class LevelManager {
 struct Chunk {
     var position: CGPoint
     var chunkIndex: Int
-    var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.TilesPerChunk), count: GameData.TilesPerChunk)
+    var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.ChunkTileWidth), count: GameData.ChunkTileWidth)
     
-    init(position: CGPoint, skScene: SKScene, chunkIndex: Int, collectibleManager: CollectibleManager) {
+    var perlinNoiseMap: GKNoiseMap
+    
+    init(position: CGPoint, skScene: SKScene, chunkIndex: Int, collectibleManager: CollectibleManager, perlinNoiseObject: GKNoise) {
         self.position = position
-        let leftSide = Float(position.x) - GameData.ChunkSize / 2
-        let bottomSide = Float(position.y) - GameData.ChunkSize / 2
         
-        for i in 0...GameData.TilesPerChunk - 1 {
-            for j in 0...GameData.TilesPerChunk - 1 {
-                let randomInt = arc4random_uniform(_:4)
+
+        
+        let leftSide = Float(position.x) - GameData.ChunkPixelSize / 2
+        let bottomSide = Float(position.y) - GameData.ChunkPixelSize / 2
+        
+        self.perlinNoiseMap = GKNoiseMap(perlinNoiseObject,
+                                         size: vector_double2(Double(GameData.ChunkTileWidth), Double(GameData.ChunkTileWidth)),
+                                         origin: vector_double2(Double(leftSide / GameData.TilePixelSize), Double(bottomSide / GameData.TilePixelSize)), // WHERE IS THE ORIGIN???
+            sampleCount: vector_int2(50, 50),
+            seamless: true)
+        
+        for i in 0...GameData.ChunkTileWidth - 1 {
+            for j in 0...GameData.ChunkTileWidth - 1 {
+                
+                let noiseValue = perlinNoiseMap.value(at: vector_int2(Int32(i), Int32(j)))
+                
+                //let randomInt = arc4random_uniform(_:4)  NO LONGER USED
                 var tilePosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
-                tilePosition.x = CGFloat(leftSide + (Float(i) * (GameData.ChunkSize / Float(GameData.TilesPerChunk))))
-                tilePosition.y = CGFloat(bottomSide + (Float(j) * (GameData.ChunkSize / Float(GameData.TilesPerChunk))))
-                self.tiles[i][j] = Tile(type: randomInt, position: tilePosition, skScene: skScene, collectibleManager: collectibleManager)
+                tilePosition.x = CGFloat(leftSide + (Float(i) * (GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
+                tilePosition.y = CGFloat(bottomSide + (Float(j) * (GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
+                self.tiles[i][j] = Tile(noiseValue: noiseValue, position: tilePosition, skScene: skScene, collectibleManager: collectibleManager)
             }
         }
         
@@ -174,47 +192,78 @@ struct Chunk {
 // Contains information about each unique tile.
 // Information is created when initialized based on the given type.
 struct Tile {
-    var type: SKSpriteNode
+    var tileTexture: SKSpriteNode
     var pathable: Bool
+    var type: String = "Grass"
     
     init () {
-        self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+        self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
         self.pathable = true
     }
     
-    init (type: UInt32, position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager) {
-        switch type {
-        case 0:
-            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+    init (noiseValue: Float, position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager) {
+        
+        if noiseValue < -0.5 {
+            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
             pathable = true
-        case 1:
-            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[1])
+        }
+        else if noiseValue < 0.0 {
+            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[1])
             pathable = true
-        case 2:
+        }
+        else if noiseValue < 0.6 {
+            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[2])
+            pathable = true
             
-            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[2])
-            pathable = true
-
             
             let randomInt = arc4random_uniform(_:20)
             
             if randomInt < 2 {
-
+                
                 collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
             }
-            
-        case 3:
-            self.type = SKSpriteNode(texture: GameData.RockTextures[0])
+        }
+        else if noiseValue <= 1.0 {
+            self.tileTexture = SKSpriteNode(texture: GameData.RockTextures[0])
             pathable = false
-            
-        default:
-            self.type = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+        }
+        else {
+            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
             pathable = true
         }
         
-        self.type.scale(to: CGSize(width: CGFloat(GameData.ChunkSize / Float(GameData.TilesPerChunk)), height: CGFloat(GameData.ChunkSize / Float(GameData.TilesPerChunk))))
-        self.type.position = position
-        self.type.zPosition = 0.1
-        skScene.addChild(self.type)
+//        switch noiseValue {
+//        case 0:
+//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+//            pathable = true
+//        case 1:
+//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[1])
+//            pathable = true
+//        case 2:
+//
+//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[2])
+//            pathable = true
+//
+//
+//            let randomInt = arc4random_uniform(_:20)
+//
+//            if randomInt < 2 {
+//
+//                collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
+//            }
+//
+//        case 3:
+//            self.tileTexture = SKSpriteNode(texture: GameData.RockTextures[0])
+//            pathable = false
+//
+//        default:
+//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
+//            pathable = true
+//        }
+        
+        self.tileTexture.scale(to: CGSize(width: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth)), height: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
+        self.tileTexture.position = position
+        self.tileTexture.zPosition = 0.1
+        skScene.addChild(self.tileTexture)
     }
 }

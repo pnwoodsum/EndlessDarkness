@@ -29,14 +29,13 @@ class GameScene: SKScene {
     let positionLabel = SKLabelNode(text: "Position: " )
     let goldLabel = SKLabelNode(text: "Gold: ")
     
-    var seed: UInt32 = 3079430158
+    //var currentSeed: UInt32 = UInt32(NSDate().timeIntervalSinceReferenceDate)
+    var currentSeed: UInt32 = 546552604
     
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
         
-        self.levelManager = LevelManager(skScene: self)
-        
-        //seed = arc4random()
+        self.levelManager = LevelManager(skScene: self, seed: currentSeed)
         
         // Initialize player sprite and class
         playerSprite.zPosition = 0.9

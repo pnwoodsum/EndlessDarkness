@@ -22,10 +22,12 @@ class CollectibleManager {
     }
     
     func CheckCollisions(playerSprite: SKSpriteNode, player: Player) {
-        for i in 0...collectibles.count - 1 {
-            if (playerSprite.intersects(collectibles[i].node!)) {
-                self.CollideWithCollectible(type: collectibles[i].type, player: player, index: i)
-                return
+        if collectibles.count > 0 {
+            for i in 0...collectibles.count - 1 {
+                if (playerSprite.intersects(collectibles[i].node!)) {
+                    self.CollideWithCollectible(type: collectibles[i].type, player: player, index: i)
+                    return
+                }
             }
         }
     }

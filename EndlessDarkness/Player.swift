@@ -15,8 +15,8 @@ class Player {
     var speed: Float
     var health: Float
     var money: Int
-    var previousChunk: Int = 0
-    var currentChunk: Int = 0
+    var previousChunk: Chunk!
+    var currentChunk: Chunk!
     var currentTile: Tile?
     var collisionRadius: Float = 15.0
     
@@ -26,7 +26,6 @@ class Player {
         self.speed = 200.0
         self.health = 100.0
         self.money = 0
-        
     }
     
     func move(xDirection: Float, yDirection: Float, deltaTime: Float) {

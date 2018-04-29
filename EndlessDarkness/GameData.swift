@@ -10,6 +10,9 @@ import Foundation
 import SpriteKit
 
 struct GameData {
+//    static var ChunkPixelSize: Float = 2048 // number of pixels per side
+//    static var TilePixelSize: Float = 64 // number of pixels per tile side
+//    static var ChunkTileWidth: Int = 32 // tiles per chunk along one dimension
     static var ChunkPixelSize: Float = 2048 // number of pixels per side
     static var TilePixelSize: Float = 64 // number of pixels per tile side
     static var ChunkTileWidth: Int = 32 // tiles per chunk along one dimension

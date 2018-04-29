@@ -67,6 +67,10 @@ class GameScene: SKScene {
         goldLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         skCamera?.addChild(goldLabel)
         
+        if let tempChunk = levelManager?.ChunkContainsPoint(point: player.position) {
+            player.currentChunk = (tempChunk)
+            player.previousChunk = player.currentChunk
+        }
 
     }
     
@@ -110,14 +114,19 @@ class GameScene: SKScene {
             
             player.move(xDirection: xDirection, yDirection: yDirection, deltaTime: Float(deltaTime))
             
-            levelManager?.CheckPlayerCollisions(player: player)
+            //levelManager?.CheckPlayerCollisions(player: player)
             
-            let tempChunk = levelManager?.ChunkContainsPoint(point: player.position)
-            
-            player.currentChunk = (tempChunk?.chunkIndex)!
-            if player.currentChunk != player.previousChunk {
-                levelManager?.UpdateMap(point: player.position, skScene: self)
+            if let tempChunk = levelManager?.ChunkContainsPoint(point: player.position) {
+                player.currentChunk = (tempChunk)
             }
+            
+            print("Current: \(player.currentChunk.position)")
+            print("Previous: \(player.previousChunk.position)")
+            
+            if player.currentChunk.position != player.previousChunk.position {
+                levelManager?.UpdateLevel(point: player.position, skScene: self)
+            }
+            
             player.previousChunk = player.currentChunk
             
         }

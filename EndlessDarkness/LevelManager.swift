@@ -13,35 +13,39 @@ import GameplayKit
 
 class LevelManager {
     var level = [Chunk]()
+    var chunksToRemove = [Chunk]()
     var collectibleManager = CollectibleManager()
     let perlinNoiseObject: GKNoise?
+    var isUpdating = false
     
     // Load 9 chunks at the start
     init(skScene: SKScene, seed: UInt32) {
         
         perlinNoiseObject = GKNoise(GKPerlinNoiseSource(frequency: 0.15, octaveCount: 3, persistence: 1, lacunarity: 1, seed: Int32(seed)))
         
-        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
+        level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
         
         let adjacentChunks = GetAdjacentPositions(point: CGPoint(x: 0, y: 0), displacement: Double(GameData.ChunkPixelSize))
         
         for position in adjacentChunks {
-            level.append(Chunk(position: position, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
+            level.append(Chunk(position: position, skScene: skScene, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
             
         }
     }
     
     func CheckPlayerCollisions(player: Player) {
-        if let currentChunk: Chunk = ChunkContainsPoint(point: player.position) {
-            CheckCollisionsInChunk(currentChunk: currentChunk, player: player)
-        }
+        let currentChunk: Chunk = ChunkContainsPoint(point: player.position)
+        
+        CheckCollisionsInChunk(currentChunk: currentChunk, player: player)
+        
         
         let adjacentPoints = GetAdjacentPositions(point: player.position, displacement: Double(GameData.ChunkPixelSize))
         
         for point in adjacentPoints {
-            if let adjacentChunk = ChunkContainsPoint(point: point) {
-                CheckCollisionsInChunk(currentChunk: adjacentChunk, player: player)
-            }
+            let adjacentChunk = ChunkContainsPoint(point: point)
+            
+            CheckCollisionsInChunk(currentChunk: adjacentChunk, player: player)
+
         }
     }
     
@@ -80,20 +84,69 @@ class LevelManager {
     }
     
     // Create adjacent chunks if they do not exist
-    func UpdateMap(point: CGPoint, skScene: SKScene) {
-        if let currentChunk: Chunk = ChunkContainsPoint(point: point) {
-            let adjacentPoints = GetAdjacentPositions(point: currentChunk.position, displacement: Double(GameData.ChunkPixelSize))
+    func UpdateLevel(point: CGPoint, skScene: SKScene) {
+        let currentChunk: Chunk = ChunkContainsPoint(point: point)
+        let adjacentPoints = GetAdjacentPositions(point: currentChunk.position, displacement: Double(GameData.ChunkPixelSize))
             
-            for point in adjacentPoints {
-                if !ChunkExists(point: point) {
-                    level.append(Chunk(position: point, skScene: skScene, chunkIndex: level.count, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
-                }
+        var currentChunkIndex = 0
+        for chunk in level {
+            if !adjacentPoints.contains(chunk.position) && chunk.position != currentChunk.position {
+                chunksToRemove.append(chunk)
+                level.remove(at: currentChunkIndex)
             }
-        } 
+            else {
+                currentChunkIndex += 1
+            }
+        }
+        for point in adjacentPoints {
+            if !ChunkExists(point: point) {
+                level.append(Chunk(position: point, skScene: skScene, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
+            }
+        }
+        if (chunksToRemove.count > 0) {
+            RemoveChunksBackground()
+        }
+    }
+    
+    func RemoveChunksBackground() {
+        if !self.isUpdating {
+            self.isUpdating = true
+            
+            let background = DispatchQueue.global()
+            
+            background.async { [unowned self] in
+                
+                // keep track of the indices of the tile that is going to be updated
+                for currentChunkIndex in 0 ..< self.chunksToRemove.count {
+                    for indexRow in 0 ..< 16 {
+                        for indexCol in 0 ..< 16 {
+                            // Update the chunk information in the mainthread
+                            DispatchQueue.main.async { [unowned self] in
+                                self.chunksToRemove[currentChunkIndex].tiles[indexRow][indexCol].tileTexture.removeFromParent()
+                            }
+                        }
+                    }
+                }
+                
+                DispatchQueue.main.async { [unowned self] in
+                    self.chunksToRemove.removeAll()
+                }
+                self.isUpdating = false
+            }
+            
+            
+        }
+    }
+    
+    // Remove the chunk reference from the level array
+    func RemoveChunk(chunk: Chunk, chunkIndex: Int) {
+
+        
+        level.remove(at: chunkIndex)
     }
     
     // Check to see which chunk is at the given point
-    func ChunkContainsPoint(point: CGPoint) -> Chunk? {
+    func ChunkContainsPoint(point: CGPoint) -> Chunk {
         for chunk in level {
             if point.x > ((chunk.position.x - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.x < (chunk.position.x + CGFloat(GameData.ChunkPixelSize) / 2)) {
                 if point.y > ((chunk.position.y - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.y < (chunk.position.y + CGFloat(GameData.ChunkPixelSize) / 2)) {
@@ -102,7 +155,7 @@ class LevelManager {
             }
         }
         
-        return nil
+        return level[0]
     }
     
     // Check to see if a chunk exists at a given point
@@ -151,33 +204,31 @@ class LevelManager {
 }
 
 // Chunk that contains tiles based on the number of tiles per chunk
-struct Chunk {
+class Chunk {
     var position: CGPoint
-    var chunkIndex: Int
     var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.ChunkTileWidth), count: GameData.ChunkTileWidth)
     
     var perlinNoiseMap: GKNoiseMap
     
-    init(position: CGPoint, skScene: SKScene, chunkIndex: Int, collectibleManager: CollectibleManager, perlinNoiseObject: GKNoise) {
+    var isUpdating: Bool
+    
+    init(position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager, perlinNoiseObject: GKNoise) {
         self.position = position
-        
-
         
         let leftSide = Float(position.x) - GameData.ChunkPixelSize / 2
         let bottomSide = Float(position.y) - GameData.ChunkPixelSize / 2
         
         self.perlinNoiseMap = GKNoiseMap(perlinNoiseObject,
                                          size: vector_double2(Double(GameData.ChunkTileWidth), Double(GameData.ChunkTileWidth)),
-                                         origin: vector_double2(Double(leftSide / GameData.TilePixelSize), Double(bottomSide / GameData.TilePixelSize)), // WHERE IS THE ORIGIN???
-            sampleCount: vector_int2(50, 50),
-            seamless: true)
+                                         origin: vector_double2(Double(leftSide / GameData.TilePixelSize), Double(bottomSide / GameData.TilePixelSize)), // Origin is the "bottom left" of the noise map
+                                         sampleCount: vector_int2(50, 50),
+                                         seamless: true)
         
-        for i in 0...GameData.ChunkTileWidth - 1 {
-            for j in 0...GameData.ChunkTileWidth - 1 {
+        for i in 0..<GameData.ChunkTileWidth {
+            for j in 0..<GameData.ChunkTileWidth {
                 
                 let noiseValue = perlinNoiseMap.value(at: vector_int2(Int32(i), Int32(j)))
-                
-                //let randomInt = arc4random_uniform(_:4)  NO LONGER USED
+
                 var tilePosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
                 tilePosition.x = CGFloat(leftSide + (Float(i) * (GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
                 tilePosition.y = CGFloat(bottomSide + (Float(j) * (GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
@@ -185,7 +236,7 @@ struct Chunk {
             }
         }
         
-        self.chunkIndex = chunkIndex
+        self.isUpdating = false
     }
 }
 
@@ -218,9 +269,10 @@ struct Tile {
             
             let randomInt = arc4random_uniform(_:20)
             
+            // Adds collectible gold coin on this tile
             if randomInt < 2 {
                 
-                collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
+                // collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
             }
         }
         else if noiseValue <= 1.0 {
@@ -231,35 +283,6 @@ struct Tile {
             self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
             pathable = true
         }
-        
-//        switch noiseValue {
-//        case 0:
-//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
-//            pathable = true
-//        case 1:
-//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[1])
-//            pathable = true
-//        case 2:
-//
-//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[2])
-//            pathable = true
-//
-//
-//            let randomInt = arc4random_uniform(_:20)
-//
-//            if randomInt < 2 {
-//
-//                collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
-//            }
-//
-//        case 3:
-//            self.tileTexture = SKSpriteNode(texture: GameData.RockTextures[0])
-//            pathable = false
-//
-//        default:
-//            self.tileTexture = SKSpriteNode(texture: GameData.BackgroundTextures[0])
-//            pathable = true
-//        }
         
         self.tileTexture.scale(to: CGSize(width: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth)), height: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
         self.tileTexture.position = position

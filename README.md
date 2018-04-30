@@ -38,4 +38,4 @@ Development Update 4/29/18
  - Animated gold coin collectibles that add to a counter when collected
  - Updated joy stick so initial position changes with large movements
  
-![alt text]()
+![alt text](https://github.com/pnwoodsum/IGME340_Project2/blob/master/Dev_Images/devGIF_1.gif)

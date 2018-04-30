@@ -14,16 +14,18 @@ class Player {
     var currentImage: String
     var speed: Float
     var health: Float
-    var previousChunk: Int = 0
-    var currentChunk: Int = 0
+    var money: Int
+    var previousChunk: Chunk!
+    var currentChunk: Chunk!
     var currentTile: Tile?
+    var collisionRadius: Float = 15.0
     
     init () {
         self.position = CGPoint.init(x: 0.0, y: 0.0)
         self.currentImage = "playerUp.png"
         self.speed = 200.0
         self.health = 100.0
-        
+        self.money = 0
     }
     
     func move(xDirection: Float, yDirection: Float, deltaTime: Float) {

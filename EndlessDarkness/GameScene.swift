@@ -12,10 +12,12 @@ class GameScene: SKScene {
     var lastUpdateTimeInterval: TimeInterval = 0
     
     var levelManager: LevelManager?
+    var collectibleManager: CollectibleManager?
     
     var joystick: Bool = false
     var joyStickInitialPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
     var joyStickCurrentPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
+    var joyStickPreviousPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
     
     var playerViewPosition: CGPoint?
     
@@ -24,35 +26,45 @@ class GameScene: SKScene {
     
     let playerSprite = SKSpriteNode(imageNamed: "playerUp.png")
     
-    var joyStickNode = SKSpriteNode(imageNamed: "greyCircle.png")
     let positionLabel = SKLabelNode(text: "Position: " )
+    let goldLabel = SKLabelNode(text: "Gold: ")
+    
+    //var currentSeed: UInt32 = UInt32(NSDate().timeIntervalSinceReferenceDate)
+    var currentSeed: UInt32 = 546552604
     
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
         
-        self.levelManager = LevelManager(skScene: self)
+        self.levelManager = LevelManager(skScene: self, seed: currentSeed)
         
+        // Initialize player sprite and class
         playerSprite.zPosition = 0.9
         playerSprite.position = CGPoint(x: 0.0, y: 0.0)
         player.position = playerSprite.position
         self.addChild(playerSprite)
         
+        // Initialize camera
         skCamera = SKCameraNode()
         self.camera = skCamera
         self.addChild(skCamera!)
         
-        joyStickNode.zPosition = 1.0
-        joyStickNode.position = CGPoint(x: 10.0, y: 10.0)
-        skCamera?.addChild(joyStickNode)
-        joyStickNode.scale(to: CGSize(width: 30, height: 30))
-        joyStickNode.isHidden = true
-        
+        // Initialize UI elements
         positionLabel.zPosition = 1.0
         positionLabel.position = CGPoint(x: 10.0, y: 20.0)
         positionLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
         positionLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         skCamera?.addChild(positionLabel)
         
+        goldLabel.zPosition = 1.0
+        goldLabel.position = CGPoint(x: 10.0, y: 100.0)
+        goldLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
+        goldLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        skCamera?.addChild(goldLabel)
+        
+        if let tempChunk = levelManager?.ChunkContainsPoint(point: player.position) {
+            player.currentChunk = (tempChunk)
+            player.previousChunk = player.currentChunk
+        }
 
     }
     
@@ -68,42 +80,53 @@ class GameScene: SKScene {
         
         skCamera?.position = player.position
         
-        if (joystick) {
-            joyStickNode.isHidden = false
-            //joyStickNode.position = convertPoint(fromView: joyStickInitialPosition)
-
-            joyStickNode.position.x = joyStickInitialPosition.x - (view?.frame.width)! / 2
-            joyStickNode.position.y = -1 * (joyStickInitialPosition.y - (view?.frame.height)! / 2)
-            
-        } else {
-            joyStickNode.isHidden = true
-        }
-        
-        //positionLabel.position = convertPoint(fromView: CGPoint(x: 10, y: 20))
         positionLabel.position = CGPoint(x: 10 - (view?.frame.width)! / 2, y: -20 + (view?.frame.height)! / 2)
         positionLabel.text = "Position: (\(Int(player.position.x)), \(Int(player.position.y)))"
+        
+        goldLabel.position = CGPoint(x: 10 - (view?.frame.width)! / 2, y: -100 + (view?.frame.height)! / 2)
+        goldLabel.text = "Gold: (\(player.money))"
         
         playerSprite.position = player.position
         
         skCamera?.position = player.position
         
         if joystick {
-            let xDirection = Float(joyStickCurrentPosition.x - joyStickInitialPosition.x)
-            let yDirection = Float(joyStickCurrentPosition.y - joyStickInitialPosition.y)
+            var xDirection = Float(joyStickCurrentPosition.x - joyStickPreviousPosition.x)
+            var yDirection = Float(joyStickCurrentPosition.y - joyStickPreviousPosition.y)
+            
+            let magnitude = powf(xDirection, 2) + powf(yDirection, 2)
+            
+            print(magnitude)
+            
+            if magnitude >= 60.0 {
+                joyStickInitialPosition = joyStickPreviousPosition
+            }
+            
+            xDirection = Float(joyStickCurrentPosition.x - joyStickInitialPosition.x)
+            yDirection = Float(joyStickCurrentPosition.y - joyStickInitialPosition.y)
             
             playerSprite.zRotation = CGFloat(atan2f(-xDirection, -yDirection))
             
             player.move(xDirection: xDirection, yDirection: yDirection, deltaTime: Float(deltaTime))
             
-            let tempChunk = levelManager?.ChunkContainsPoint(point: player.position)
+            // Check for player collisions with the tiles of the current chunks
+            levelManager?.CheckPlayerCollisions(player: player)
             
-            player.currentChunk = (tempChunk?.chunkIndex)!
-            if player.currentChunk != player.previousChunk {
-                levelManager?.UpdateMap(point: player.position, skScene: self)
+            // Update only when the player has moved far enough from the center of the current chunk
+            // The current chunk represents the the previous chunk where update level was called
+            if (levelManager?.IsDistantFromCurrentChunk(currentChunk: player.currentChunk, position: player.position))! {
+                levelManager?.UpdateLevel(point: player.position, skScene: self)
+                
+                if let tempChunk = levelManager?.ChunkContainsPoint(point: player.position) {
+                    player.previousChunk = player.currentChunk
+                    player.currentChunk = (tempChunk)
+                }
             }
-            player.previousChunk = player.currentChunk
             
         }
+        
+        // Check player collisions with collectibles
+        self.levelManager?.collectibleManager.CheckCollisions(playerSprite: playerSprite, player: player)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -113,6 +136,7 @@ class GameScene: SKScene {
             
             if (position.x < self.frame.width / 2) {
                 joyStickInitialPosition = position
+                joyStickPreviousPosition = position
                 joyStickCurrentPosition = position
                 joystick = true
             }
@@ -120,14 +144,18 @@ class GameScene: SKScene {
         }
     }
     
+    
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        joystick = false
+        
         for touch in (touches) {
             
             let position = touch.location(in: view)
             
             if (position.x < self.frame.width / 2) {
                 joystick = true
+                
+                joyStickPreviousPosition = joyStickCurrentPosition
                 
                 joyStickCurrentPosition = position
             }
@@ -143,8 +171,6 @@ class GameScene: SKScene {
             if (position.x < self.frame.width / 2) {
                 joystick = false
             }
-            
         }
     }
-    
 }

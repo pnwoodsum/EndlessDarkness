@@ -31,3 +31,11 @@ Going forward:
   - Simple enemies and combat
   - Sounds
   - Art
+
+Development Update 4/29/18
+ - The map is now generated procedurally using a perlin noise map based on a seed
+ - Collisions with non-pathable tiles (rocks)
+ - Animated gold coin collectibles that add to a counter when collected
+ - Updated joy stick so initial position changes with large movements
+ 
+![alt text]()

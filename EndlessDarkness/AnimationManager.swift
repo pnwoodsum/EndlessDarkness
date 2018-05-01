@@ -27,6 +27,7 @@ class Animation {
         let firstFrameTexture = self.animationFrames[0]
         
         self.animationNode = SKSpriteNode(texture: firstFrameTexture)
+        self.animationNode.setScale(CGFloat(GameData.GlobalScale))
         self.animationNode.position = position
         self.animationNode.zPosition = 0.7
         parentNode.addChild(self.animationNode)

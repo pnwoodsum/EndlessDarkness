@@ -79,8 +79,6 @@ class LevelManager {
                         let closestPlayerPosition = player.position + CGPoint(x: closestX, y: closestY)
                         let halfTile = CGFloat(GameData.TilePixelSize / 2)
                         
-                        print(tilePosition)
-                        
                         // Displace the character depending on relative position to the colliding tile
                         if (closestPlayerPosition.x < tilePosition.x + halfTile &&
                             closestPlayerPosition.x > tilePosition.x - halfTile &&
@@ -338,8 +336,8 @@ struct Tile {
             pathable = true
         }
         
-        // Initialize node data
-        self.tileSpriteNode.scale(to: CGSize(width: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth)), height: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
+        // Initialize node data       
+        self.tileSpriteNode.scale(to: CGSize(width: CGFloat(GameData.TilePixelSize), height: CGFloat(GameData.TilePixelSize)))
         self.tileSpriteNode.position = position
         self.tileSpriteNode.zPosition = 0.1
         chunkParentNode.addChild(self.tileSpriteNode)

@@ -24,7 +24,12 @@ class CollectibleManager {
     func CheckCollisions(playerSprite: SKSpriteNode, player: Player) {
         if collectibles.count > 0 {
             for i in 0 ..< collectibles.count {
-                if (playerSprite.intersects(collectibles[i].node!)) {
+                let xDifference = Float(collectibles[i].itemPosition.x - player.position.x)
+                let yDifference = Float(collectibles[i].itemPosition.y - player.position.y)
+                
+                let magnitudeSquared = powf(xDifference, 2) + powf(yDifference, 2)
+                
+                if magnitudeSquared < powf((player.collisionRadius + collectibles[i].collisionRadius), 2) {
                     self.CollideWithCollectible(type: collectibles[i].type, player: player, index: i)
                     return
                 }
@@ -59,6 +64,7 @@ class Collectible {
     var animation: Animation?
     var index: Int
     var collisionRadius: Float
+    var itemPosition: CGPoint
     
     init (type: String, position: CGPoint, parentNode: SKNode, index: Int) {
         switch type {
@@ -67,14 +73,16 @@ class Collectible {
             self.animation = Animation(animatedAtlasName: "GoldCoinAnimation", position: position, parentNode: parentNode)
             self.node = (self.animation?.animationNode)!
             self.index = index
-            collisionRadius = 3
+            collisionRadius = 5 * GameData.GlobalScale
+            self.itemPosition = position + parentNode.position
             
         default:
             self.type = "Collectible Init Error"
             self.animation = nil
             self.node = nil
             self.index = index
-            collisionRadius = 3
+            self.itemPosition = position + parentNode.position
+            collisionRadius = 5 * GameData.GlobalScale
         }
     }
 }

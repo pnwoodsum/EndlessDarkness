@@ -65,13 +65,11 @@ class GameScene: SKScene {
             player.currentChunk = (tempChunk)
             player.previousChunk = player.currentChunk
         }
-
     }
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
         let deltaTime: TimeInterval = currentTime - lastUpdateTimeInterval
-        
         lastUpdateTimeInterval = currentTime
         
         playerViewPosition = convertPoint(toView: player.position)
@@ -90,13 +88,12 @@ class GameScene: SKScene {
         
         skCamera?.position = player.position
         
+        // Handles movement and collisions
         if joystick {
             var xDirection = Float(joyStickCurrentPosition.x - joyStickPreviousPosition.x)
             var yDirection = Float(joyStickCurrentPosition.y - joyStickPreviousPosition.y)
             
             let magnitude = powf(xDirection, 2) + powf(yDirection, 2)
-            
-            print(magnitude)
             
             if magnitude >= 60.0 {
                 joyStickInitialPosition = joyStickPreviousPosition
@@ -140,7 +137,6 @@ class GameScene: SKScene {
                 joyStickCurrentPosition = position
                 joystick = true
             }
-            
         }
     }
     

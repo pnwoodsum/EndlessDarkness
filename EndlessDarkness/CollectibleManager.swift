@@ -17,13 +17,13 @@ class CollectibleManager {
         self.collectibles = [Collectible]()
     }
     
-    func CreateNewCollectible(type: String, position: CGPoint, skScene: SKScene) {
-        collectibles.append(Collectible(type: type, position: position, skScene: skScene, index: collectibles.count))
+    func CreateNewCollectible(type: String, position: CGPoint, parentNode: SKNode) {
+        collectibles.append(Collectible(type: type, position: position, parentNode: parentNode, index: collectibles.count))
     }
     
     func CheckCollisions(playerSprite: SKSpriteNode, player: Player) {
         if collectibles.count > 0 {
-            for i in 0...collectibles.count - 1 {
+            for i in 0 ..< collectibles.count {
                 if (playerSprite.intersects(collectibles[i].node!)) {
                     self.CollideWithCollectible(type: collectibles[i].type, player: player, index: i)
                     return
@@ -53,25 +53,28 @@ class CollectibleManager {
     }
 }
 
-struct Collectible {
+class Collectible {
     var type: String
     var node: SKSpriteNode?
     var animation: Animation?
     var index: Int
-
-    init (type: String, position: CGPoint, skScene: SKScene, index: Int) {
+    var collisionRadius: Float
+    
+    init (type: String, position: CGPoint, parentNode: SKNode, index: Int) {
         switch type {
         case "GoldCoin":
             self.type = "GoldCoin"
-            self.animation = Animation(animatedAtlasName: "GoldCoinAnimation", position: position, skScene: skScene)
+            self.animation = Animation(animatedAtlasName: "GoldCoinAnimation", position: position, parentNode: parentNode)
             self.node = (self.animation?.animationNode)!
             self.index = index
+            collisionRadius = 3
             
         default:
             self.type = "Collectible Init Error"
             self.animation = nil
             self.node = nil
             self.index = index
+            collisionRadius = 3
         }
     }
 }

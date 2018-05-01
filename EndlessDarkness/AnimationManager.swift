@@ -13,7 +13,7 @@ class Animation {
     var animationNode: SKSpriteNode
     var animationFrames: [SKTexture] = []
     
-    init (animatedAtlasName: String, position: CGPoint, skScene: SKScene) {
+    init (animatedAtlasName: String, position: CGPoint, parentNode: SKNode) {
         
         let animatedAtlas = SKTextureAtlas(named: animatedAtlasName)
         
@@ -29,7 +29,7 @@ class Animation {
         self.animationNode = SKSpriteNode(texture: firstFrameTexture)
         self.animationNode.position = position
         self.animationNode.zPosition = 0.7
-        skScene.addChild(self.animationNode)
+        parentNode.addChild(self.animationNode)
         
         self.animate()
     }

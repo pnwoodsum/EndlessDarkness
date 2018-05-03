@@ -29,8 +29,7 @@ class GameScene: SKScene {
     let positionLabel = SKLabelNode(text: "Position: " )
     let goldLabel = SKLabelNode(text: "Gold: ")
     
-    //var currentSeed: UInt32 = UInt32(NSDate().timeIntervalSinceReferenceDate)
-    var currentSeed: UInt32 = 546552604
+    var currentSeed: UInt32 = 0
     
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
@@ -41,6 +40,7 @@ class GameScene: SKScene {
         playerSprite.zPosition = 0.9
         playerSprite.position = CGPoint(x: 0.0, y: 0.0)
         player.position = playerSprite.position
+        playerSprite.setScale(CGFloat(GameData.GlobalScale))
         self.addChild(playerSprite)
         
         // Initialize camera
@@ -65,13 +65,11 @@ class GameScene: SKScene {
             player.currentChunk = (tempChunk)
             player.previousChunk = player.currentChunk
         }
-
     }
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
         let deltaTime: TimeInterval = currentTime - lastUpdateTimeInterval
-        
         lastUpdateTimeInterval = currentTime
         
         playerViewPosition = convertPoint(toView: player.position)
@@ -90,29 +88,28 @@ class GameScene: SKScene {
         
         skCamera?.position = player.position
         
+        // Handles movement and collisions
         if joystick {
-            var xDirection = Float(joyStickCurrentPosition.x - joyStickPreviousPosition.x)
-            var yDirection = Float(joyStickCurrentPosition.y - joyStickPreviousPosition.y)
+            let xDifference = Float(joyStickCurrentPosition.x - joyStickInitialPosition.x)
+            let yDifference = Float(joyStickCurrentPosition.y - joyStickInitialPosition.y)
             
-            let magnitude = powf(xDirection, 2) + powf(yDirection, 2)
+            let magnitude = sqrt(powf(xDifference, 2) + powf(yDifference, 2))
             
-            print(magnitude)
-            
-            if magnitude >= 60.0 {
-                joyStickInitialPosition = joyStickPreviousPosition
+            if magnitude > 20.0 {
+                let xDisplacement = CGFloat((xDifference / magnitude) * 20)
+                joyStickInitialPosition.x = joyStickCurrentPosition.x - xDisplacement
+                let yDisplacement = CGFloat((yDifference / magnitude) * 20)
+                joyStickInitialPosition.y = joyStickCurrentPosition.y - yDisplacement
             }
             
-            xDirection = Float(joyStickCurrentPosition.x - joyStickInitialPosition.x)
-            yDirection = Float(joyStickCurrentPosition.y - joyStickInitialPosition.y)
+            playerSprite.zRotation = CGFloat(atan2f(-xDifference, -yDifference))
             
-            playerSprite.zRotation = CGFloat(atan2f(-xDirection, -yDirection))
-            
-            player.move(xDirection: xDirection, yDirection: yDirection, deltaTime: Float(deltaTime))
+            player.move(xDirection: xDifference, yDirection: yDifference, deltaTime: Float(deltaTime))
             
             // Check for player collisions with the tiles of the current chunks
             levelManager?.CheckPlayerCollisions(player: player)
             
-            // Update only when the player has moved far enough from the center of the current chunk
+            // Update the level only when the player has moved far enough from the center of the current chunk
             // The current chunk represents the the previous chunk where update level was called
             if (levelManager?.IsDistantFromCurrentChunk(currentChunk: player.currentChunk, position: player.position))! {
                 levelManager?.UpdateLevel(point: player.position, skScene: self)
@@ -129,6 +126,11 @@ class GameScene: SKScene {
         self.levelManager?.collectibleManager.CheckCollisions(playerSprite: playerSprite, player: player)
     }
     
+    // helper function to generate a new seed
+    func generateSeed() {
+        currentSeed = UInt32(NSDate().timeIntervalSinceReferenceDate)
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in (touches) {
             
@@ -140,7 +142,6 @@ class GameScene: SKScene {
                 joyStickCurrentPosition = position
                 joystick = true
             }
-            
         }
     }
     

@@ -13,7 +13,6 @@ import GameplayKit
 
 class LevelManager {
     var level = [Chunk]()
-    var chunksToRemove = [Chunk]()
     var collectibleManager = CollectibleManager()
     let perlinNoiseObject: GKNoise?
     var isUpdating = false
@@ -51,38 +50,50 @@ class LevelManager {
 
         }
     }
-    
+
     // Currently checks collisions between player and tiles in given chunk
     func CheckCollisionsInChunk(currentChunk: Chunk, player: Player) {
         for i in 0...GameData.ChunkTileWidth - 1 {
             for j in 0...GameData.ChunkTileWidth - 1 {
-                if !currentChunk.tiles[i][j].pathable {
-                    // Find the direction towards center of tile and closest distance to the center of the tile
-                    // from the closest point on the colliding circle
-                    let xDifference = Float(currentChunk.tiles[i][j].tileSpriteNode.position.x - player.position.x)
-                    let yDifference = Float(currentChunk.tiles[i][j].tileSpriteNode.position.y - player.position.y)
+                // Is the tile close enough to the player to care about
+                let tilePosition = currentChunk.tiles[i][j].tilePosition
+                
+                let xDifference = Float(tilePosition.x - player.position.x)
+                let yDifference = Float(tilePosition.y - player.position.y)
+                
+                let magnitudeSquared = powf(xDifference, 2) + powf(yDifference, 2)
+                
+                if magnitudeSquared < powf((GameData.TilePixelSize * 2), 2) {
                     
-                    let magnitude = sqrt(powf(xDifference, 2) + powf(yDifference, 2))
-                    
-                    let xDirection = (xDifference / magnitude)
-                    let yDirection = (yDifference / magnitude)
-                    
-                    let closestX = CGFloat(xDirection * player.collisionRadius)
-                    let closestY = CGFloat(yDirection * player.collisionRadius)
-                    
-                    let closestPlayerPosition = player.position + CGPoint(x: closestX, y: closestY)
-                    
-                    // Displace the character depending on relative position to the colliding tile
-                    if currentChunk.tiles[i][j].tileSpriteNode.contains(closestPlayerPosition) {
-                        if abs(closestX) > abs(closestY) {
-                            let xDisplacement =  abs(currentChunk.tiles[i][j].tileSpriteNode.position.x) - abs(closestPlayerPosition.x)
-                            let absXDisplacement = CGFloat(GameData.TilePixelSize) / 2 - abs(xDisplacement)
-                            player.position.x += absXDisplacement * CGFloat(-xDirection)
-                        }
-                        else {
-                            let yDisplacement = abs(currentChunk.tiles[i][j].tileSpriteNode.position.y) - abs(closestPlayerPosition.y)
-                            let absYDisplacement = CGFloat(GameData.TilePixelSize) / 2 - abs(yDisplacement)
-                            player.position.y += absYDisplacement * CGFloat(-yDirection)
+                    if !currentChunk.tiles[i][j].pathable {
+                        // Find the direction towards center of tile and closest distance to the center of the tile
+                        // from the closest point on the colliding circle
+                        let magnitude = sqrt(magnitudeSquared)
+                        
+                        let xDirection = (xDifference / magnitude)
+                        let yDirection = (yDifference / magnitude)
+                        
+                        let closestX = CGFloat(xDirection * player.collisionRadius)
+                        let closestY = CGFloat(yDirection * player.collisionRadius)
+                        
+                        let closestPlayerPosition = player.position + CGPoint(x: closestX, y: closestY)
+                        let halfTile = CGFloat(GameData.TilePixelSize / 2)
+                        
+                        // Displace the character depending on relative position to the colliding tile
+                        if (closestPlayerPosition.x < tilePosition.x + halfTile &&
+                            closestPlayerPosition.x > tilePosition.x - halfTile &&
+                            closestPlayerPosition.y < tilePosition.y + halfTile &&
+                            closestPlayerPosition.y > tilePosition.y - halfTile) {
+                            if abs(closestX) > abs(closestY) {
+                                let xDisplacement =  abs(currentChunk.tiles[i][j].tilePosition.x) - abs(closestPlayerPosition.x)
+                                let absXDisplacement = CGFloat(GameData.TilePixelSize) / 2 - abs(xDisplacement)
+                                player.position.x += absXDisplacement * CGFloat(-xDirection)
+                            }
+                            else {
+                                let yDisplacement = abs(currentChunk.tiles[i][j].tilePosition.y) - abs(closestPlayerPosition.y)
+                                let absYDisplacement = CGFloat(GameData.TilePixelSize) / 2 - abs(yDisplacement)
+                                player.position.y += absYDisplacement * CGFloat(-yDirection)
+                            }
                         }
                     }
                 }
@@ -96,10 +107,12 @@ class LevelManager {
         let adjacentPoints = GetAdjacentPositions(point: currentChunk.position, displacement: Double(GameData.ChunkPixelSize))
         
         // Find the chunks to be removed
+        // Remove their node from the scene
+        // Remove chunk from level array
         var currentChunkIndex = 0
         for chunk in level {
             if !adjacentPoints.contains(chunk.position) && chunk.position != currentChunk.position {
-                chunksToRemove.append(chunk)
+                chunk.chunkNode.removeFromParent()
                 level.remove(at: currentChunkIndex)
             }
             else {
@@ -113,45 +126,36 @@ class LevelManager {
                 level.append(Chunk(position: point, skScene: skScene, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
             }
         }
-        
-        
-        if (chunksToRemove.count > 0) {
-            // Remove sprites for their parents
-            RemoveChunksBackground(chunkTileWidth: GameData.ChunkTileWidth)
-            
-            // Remove reference to the chunk from the chunksToRemove array
-            //self.chunksToRemove.removeAll()
-        }
     }
     
     // Used to asynchronously remove the tile sprites from their parent nodes
-    func RemoveChunksBackground(chunkTileWidth: Int) {
-        if !self.isUpdating {
-            self.isUpdating = true
-            
-            let background = DispatchQueue.global()
-            
-            background.async { [unowned self] in
-                
-                // keep track of the indices of the tile that is going to be updated
-                for currentChunkIndex in 0 ..< self.chunksToRemove.count {
-                    for indexRow in 0 ..< chunkTileWidth {
-                        for indexCol in 0 ..< chunkTileWidth {
-                            
-                            // Update the chunk information in the mainthread
-                            DispatchQueue.main.async { [unowned self] in
-                                self.chunksToRemove[currentChunkIndex].tiles[indexRow][indexCol].tileSpriteNode.removeFromParent()
-                            }
-                        }
-                    }
-                }
-                DispatchQueue.main.async { [unowned self] in
-                    self.chunksToRemove.removeAll()
-                }
-                self.isUpdating = false
-            }
-        }
-    }
+//    func RemoveChunksBackground(chunkTileWidth: Int) {
+//        if !self.isUpdating {
+//            self.isUpdating = true
+//
+//            let background = DispatchQueue.global()
+//
+//            background.async { [unowned self] in
+//
+//                // keep track of the indices of the tile that is going to be updated
+//                for currentChunkIndex in 0 ..< self.chunksToRemove.count {
+//                    for indexRow in 0 ..< chunkTileWidth {
+//                        for indexCol in 0 ..< chunkTileWidth {
+//
+//                            // Update the chunk information in the mainthread
+//                            DispatchQueue.main.async { [unowned self] in
+//                                self.chunksToRemove[currentChunkIndex].tiles[indexRow][indexCol].tileSpriteNode.removeFromParent()
+//                            }
+//                        }
+//                    }
+//                }
+//                DispatchQueue.main.async { [unowned self] in
+//                    self.chunksToRemove.removeAll()
+//                }
+//                self.isUpdating = false
+//            }
+//        }
+//    }
     
     // Check to see which chunk is at the given point
     func ChunkContainsPoint(point: CGPoint) -> Chunk {
@@ -183,8 +187,8 @@ class LevelManager {
     func TileContainsPoint(chunk: Chunk, point: CGPoint) -> Tile? {
         for tileRows in chunk.tiles {
             for tile in tileRows {
-                if point.x > ((tile.tileSpriteNode.position.x - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.x < (tile.tileSpriteNode.position.x + CGFloat(GameData.ChunkPixelSize) / 2)) {
-                    if point.y > ((tile.tileSpriteNode.position.y - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.y < (tile.tileSpriteNode.position.y + CGFloat(GameData.ChunkPixelSize) / 2)) {
+                if point.x > ((tile.tilePosition.x - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.x < (tile.tilePosition.x + CGFloat(GameData.ChunkPixelSize) / 2)) {
+                    if point.y > ((tile.tilePosition.y - CGFloat(GameData.ChunkPixelSize) / 2)) && (point.y < (tile.tilePosition.y + CGFloat(GameData.ChunkPixelSize) / 2)) {
                         return tile
                     }
                 }
@@ -235,6 +239,8 @@ class LevelManager {
 
 // Chunk that contains tiles based on the number of tiles per chunk
 class Chunk {
+    let chunkNode: SKNode
+    
     var position: CGPoint
     var tiles = Array(repeating: Array(repeating: Tile(), count: GameData.ChunkTileWidth), count: GameData.ChunkTileWidth)
     
@@ -245,6 +251,9 @@ class Chunk {
     init(position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager, perlinNoiseObject: GKNoise) {
         self.position = position
         
+        self.chunkNode = SKNode()
+        self.chunkNode.position = self.position
+        
         let leftSide = Float(position.x) - GameData.ChunkPixelSize / 2
         let bottomSide = Float(position.y) - GameData.ChunkPixelSize / 2
         
@@ -254,17 +263,20 @@ class Chunk {
                                          sampleCount: vector_int2(50, 50),
                                          seamless: true)
         
-        for i in 0..<GameData.ChunkTileWidth {
-            for j in 0..<GameData.ChunkTileWidth {
+        for i in 0 ..< GameData.ChunkTileWidth {
+            for j in 0 ..< GameData.ChunkTileWidth {
                 
                 let noiseValue = perlinNoiseMap.value(at: vector_int2(Int32(i), Int32(j)))
 
                 var tilePosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
-                tilePosition.x = CGFloat(leftSide + (Float(i) * (GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
-                tilePosition.y = CGFloat(bottomSide + (Float(j) * (GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
-                self.tiles[i][j] = Tile(noiseValue: noiseValue, position: tilePosition, skScene: skScene, collectibleManager: collectibleManager)
+                tilePosition.x = CGFloat((Float(i) * GameData.TilePixelSize) - (GameData.ChunkPixelSize / 2))
+                tilePosition.y = CGFloat((Float(j) * GameData.TilePixelSize) - (GameData.ChunkPixelSize / 2))
+                
+                self.tiles[i][j] = Tile(chunkParentNode: self.chunkNode, noiseValue: noiseValue, position: tilePosition, collectibleManager: collectibleManager)
             }
         }
+        
+        skScene.addChild(chunkNode)
         
         self.isUpdating = false
     }
@@ -276,14 +288,16 @@ struct Tile {
     var tileSpriteNode: SKSpriteNode
     var pathable: Bool
     var type: String = "Grass"
+    var tilePosition: CGPoint
     
     // Default constructor (used to initialize arrays, etc...)
     init () {
         self.tileSpriteNode = SKSpriteNode(texture: GameData.BackgroundTextures[0])
         self.pathable = true
+        self.tilePosition = CGPoint(x: 0, y: 0)
     }
     
-    init (noiseValue: Float, position: CGPoint, skScene: SKScene, collectibleManager: CollectibleManager) {
+    init (chunkParentNode: SKNode, noiseValue: Float, position: CGPoint, collectibleManager: CollectibleManager) {
         // Tile for grass
         if noiseValue < -0.1 {
             self.tileSpriteNode = SKSpriteNode(texture: GameData.BackgroundTextures[0])
@@ -306,7 +320,7 @@ struct Tile {
             // Adds collectible gold coin on this tile
             if randomInt < 2 {
                 
-                collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, skScene: skScene)
+                collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, parentNode: chunkParentNode)
             }
         }
             
@@ -322,10 +336,12 @@ struct Tile {
             pathable = true
         }
         
-        // Initialize node data
-        self.tileSpriteNode.scale(to: CGSize(width: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth)), height: CGFloat(GameData.ChunkPixelSize / Float(GameData.ChunkTileWidth))))
+        // Initialize node data       
+        self.tileSpriteNode.scale(to: CGSize(width: CGFloat(GameData.TilePixelSize), height: CGFloat(GameData.TilePixelSize)))
         self.tileSpriteNode.position = position
         self.tileSpriteNode.zPosition = 0.1
-        skScene.addChild(self.tileSpriteNode)
+        chunkParentNode.addChild(self.tileSpriteNode)
+        
+        self.tilePosition = position + chunkParentNode.position
     }
 }

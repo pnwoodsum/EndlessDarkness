@@ -12,9 +12,7 @@ class MenuScene: SKScene {
     
     var continueButton = SKLabelNode(text: "Continue Game")
     var newButton = SKLabelNode(text: "New Game")
-    
-    var playButton = SKSpriteNode()
-    let playButtonTex = SKTexture(imageNamed: "play")
+    var defaultSeed: UInt32 = 546552604
     
     override func didMove(to view: SKView) {
         continueButton.fontSize = 50
@@ -34,13 +32,19 @@ class MenuScene: SKScene {
             
             if node == continueButton {
                 let transition: SKTransition = SKTransition.fade(withDuration: 1)
-                let scene: SKScene = GameScene(size: self.size)
+                let scene: GameScene = GameScene(size: self.size)
+                
+                scene.currentSeed = defaultSeed
+                
                 self.view?.presentScene(scene, transition: transition)
             }
             
-            else if node == continueButton {
+            else if node == newButton {
                 let transition: SKTransition = SKTransition.fade(withDuration: 1)
-                let scene: SKScene = GameScene(size: self.size)
+                let scene: GameScene = GameScene(size: self.size)
+                
+                scene.generateSeed()
+                
                 self.view?.presentScene(scene, transition: transition)
             }
         }

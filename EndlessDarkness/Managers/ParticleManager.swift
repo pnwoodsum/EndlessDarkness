@@ -61,7 +61,7 @@ class Emitter {
             let xDirection = sin((Float(randomDegree) * .pi) / 180)
             let yDirection = cos((Float(randomDegree) * .pi) / 180)
             let startingDirection = CGPoint(x: CGFloat(xDirection), y: CGFloat(yDirection))
-            particles.append(Particle(particleType: "Fire", lifeTime: self.lifeTime, position: self.position, speed: self.speedInitial, direction: startingDirection, sizeInitial: CGFloat(self.sizeInitial), alphaInitial: self.alphaInitial, alphaFinal: self.alphaFinal, skScene: skScene))
+            particles.append(Particle(particleType: type, lifeTime: self.lifeTime, position: self.position, speed: self.speedInitial, direction: startingDirection, sizeInitial: CGFloat(self.sizeInitial), alphaInitial: self.alphaInitial, alphaFinal: self.alphaFinal, skScene: skScene))
         }
     }
     
@@ -139,6 +139,14 @@ class Particle {
         
         switch particleType {
         case "Fire":
+            self.particleSpriteNode = SKSpriteNode(texture: GameData.FireTexture)
+            self.particleSpriteNode.zPosition = 1.0
+            self.particleSpriteNode.position = self.position
+            self.particleSpriteNode.alpha = CGFloat(alphaInitial)
+            self.particleSpriteNode.isHidden = true
+            self.particleSpriteNode.setScale(sizeInitial * CGFloat(GameData.GlobalScale))
+            skScene.addChild(self.particleSpriteNode)
+        case "EnemyParticle":
             self.particleSpriteNode = SKSpriteNode(texture: GameData.FireTexture)
             self.particleSpriteNode.zPosition = 1.0
             self.particleSpriteNode.position = self.position

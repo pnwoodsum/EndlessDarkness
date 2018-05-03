@@ -20,8 +20,8 @@ class SpellManager {
     
     init(skScene: SKScene) {
         fireballChargingEmitter = Emitter(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene)
-        fireballMovingEmitter = Emitter(type: "Circle", lifeTime: 0.4, spawnRate: 0.01, maxParticles: 30, position: CGPoint(x: 0.0, y: 0.0), sizeInitial: 1.8, sizeFinal: 2.4, speedInitial: 0.3, speedFinal: 0.14, alphaInitial: 0.8, alphaFinal: 0.1, skScene: skScene)
-        fireballExplosionEmitter = Emitter(type: "Circle", lifeTime: 0.2, spawnRate: 0.01, maxParticles: 50, position: CGPoint(x: 0.0, y: 0.0), sizeInitial: 10.0, sizeFinal: 10.0, speedInitial: 7.0, speedFinal: 0.7, alphaInitial: 0.9, alphaFinal: 0.4, skScene: skScene)
+        fireballMovingEmitter = Emitter(type: "Fire", lifeTime: 0.4, spawnRate: 0.01, maxParticles: 30, position: CGPoint(x: 0.0, y: 0.0), sizeInitial: 1.8, sizeFinal: 2.4, speedInitial: 0.3, speedFinal: 0.14, alphaInitial: 0.8, alphaFinal: 0.1, skScene: skScene)
+        fireballExplosionEmitter = Emitter(type: "Fire", lifeTime: 0.2, spawnRate: 0.01, maxParticles: 50, position: CGPoint(x: 0.0, y: 0.0), sizeInitial: 10.0, sizeFinal: 10.0, speedInitial: 7.0, speedFinal: 0.7, alphaInitial: 0.9, alphaFinal: 0.4, skScene: skScene)
     }
     
     func update(deltaTime: Float, position: CGPoint) {
@@ -117,5 +117,9 @@ class Fireball {
                 self.ready = true
             }
         }
+    }
+    
+    func blowUp() {
+        self.distanceMoved = maxRange
     }
 }

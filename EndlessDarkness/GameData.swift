@@ -19,6 +19,8 @@ struct GameData {
     
     
     static var FireTexture = SKTexture(imageNamed: "fire0.png")
+    static var EnemyParticle = SKTexture(imageNamed: "enemyParticle.png")
+    static var EnemyTexture = SKTexture(imageNamed: "enemy1.png")
 //    static var FireTextures: [SKTexture] = [
 //        SKTexture(imageNamed: "fire0.png")
 //    ]

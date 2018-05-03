@@ -30,6 +30,7 @@ class GameScene: SKScene {
     var player = Player()
     var skCamera: SKCameraNode?
     
+    var enemyManager = EnemyManager()
     let playerSprite = SKSpriteNode(imageNamed: "playerUp.png")
     
     let positionLabel = SKLabelNode(text: "Position: " )
@@ -102,6 +103,8 @@ class GameScene: SKScene {
         
         skCamera?.position = player.position
         
+        //enemyManager.spawnEnemies(deltaTime: Float(deltaTime), playerPosition: player.position, skScene: self)
+        //enemyManager.updateEnemies(playerPosition: player.position, deltaTime: Float(deltaTime), otherCollisionRadius: player.collisionRadius)
         
         spellManager.fireballCharging = false
         // Handles touches on the right side of the screen for spells

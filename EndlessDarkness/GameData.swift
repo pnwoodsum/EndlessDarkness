@@ -10,7 +10,7 @@ import Foundation
 import SpriteKit
 
 struct GameData {
-    static var GlobalScale: Float = 0.5
+    static var GlobalScale: Float = 0.65
     
     
     static var TilePixelSize: Float = 64 * GameData.GlobalScale // number of pixels per tile side
@@ -18,7 +18,10 @@ struct GameData {
     static var ChunkPixelSize: Float = Float(GameData.ChunkTileWidth) * GameData.TilePixelSize // number of pixels per side of chunk
     
     
-    
+    static var FireTexture = SKTexture(imageNamed: "fire0.png")
+//    static var FireTextures: [SKTexture] = [
+//        SKTexture(imageNamed: "fire0.png")
+//    ]
     
     static var BackgroundTextures: [SKTexture] = [
         SKTexture(imageNamed: "grass.png"),

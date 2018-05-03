@@ -19,6 +19,12 @@ class GameScene: SKScene {
     var joyStickCurrentPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
     var joyStickPreviousPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
     
+    var secondTouch: Bool = false;
+    var secondTouchInitialPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
+    var secondTouchCurrentPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
+    var secondTouchPreviousPosition: CGPoint = CGPoint(x: 0.0, y: 0.0)
+    var secondTouchTimer: Float = 0
+    
     var playerViewPosition: CGPoint?
     
     var player = Player()
@@ -30,11 +36,18 @@ class GameScene: SKScene {
     let goldLabel = SKLabelNode(text: "Gold: ")
     
     var currentSeed: UInt32 = 0
+
+    var spellManager: SpellManager!
+
     
     // Used to initialize node positions, attributes etc...
     override func didMove(to view: SKView) {
         
         self.levelManager = LevelManager(skScene: self, seed: currentSeed)
+        
+        self.spellManager = SpellManager(skScene: self)
+        
+        self.view?.isMultipleTouchEnabled = true
         
         // Initialize player sprite and class
         playerSprite.zPosition = 0.9
@@ -65,6 +78,7 @@ class GameScene: SKScene {
             player.currentChunk = (tempChunk)
             player.previousChunk = player.currentChunk
         }
+        
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -87,6 +101,33 @@ class GameScene: SKScene {
         playerSprite.position = player.position
         
         skCamera?.position = player.position
+        
+        
+        spellManager.fireballCharging = false
+        // Handles touches on the right side of the screen for spells
+        if secondTouch {
+            secondTouchTimer += Float(deltaTime)
+            
+            spellManager.fireballCharging = true
+            
+            let xDifference = Float(secondTouchCurrentPosition.x - secondTouchInitialPosition.x)
+            let yDifference = Float(secondTouchCurrentPosition.y - secondTouchInitialPosition.y)
+            
+            let magnitude = sqrt(powf(xDifference, 2) + powf(yDifference, 2))
+            print(magnitude)
+            
+            
+            if (spellManager.fireball.ready) {
+                if magnitude > 100.0 {
+                    let xDisplacement = CGFloat(xDifference / magnitude)
+                    let yDisplacement = CGFloat(yDifference / magnitude)
+                    spellManager.throwFireball(position: player.position, direction: CGPoint(x: xDisplacement, y: yDisplacement))
+                }
+            }
+        }
+        
+        // Update spells
+        spellManager.update(deltaTime: Float(deltaTime), position: player.position)
         
         // Handles movement and collisions
         if joystick {
@@ -142,13 +183,21 @@ class GameScene: SKScene {
                 joyStickCurrentPosition = position
                 joystick = true
             }
+            
+            if (position.x > self.frame.width / 2) {
+                secondTouch = true
+                secondTouchInitialPosition = position
+                secondTouchPreviousPosition = position
+                secondTouchCurrentPosition = position
+                secondTouchTimer = 0
+            }
         }
     }
     
     
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+
         for touch in (touches) {
             
             let position = touch.location(in: view)
@@ -161,16 +210,34 @@ class GameScene: SKScene {
                 joyStickCurrentPosition = position
             }
             
+            if (position.x > self.frame.width / 2) {
+                secondTouch = true
+                
+                secondTouchPreviousPosition = secondTouchCurrentPosition
+                
+                secondTouchCurrentPosition = position
+            }
+            
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        joystick = false
+        secondTouch = false
+        
         for touch in (touches) {
-            
             let position = touch.location(in: self)
             
-            if (position.x < self.frame.width / 2) {
+            if touches.capacity == 1 {
                 joystick = false
+            }
+            
+            else if (position.x < self.frame.width / 2) {
+                joystick = true
+            }
+            
+            if (position.x > self.frame.width / 2) {
+                secondTouch = true
             }
         }
     }

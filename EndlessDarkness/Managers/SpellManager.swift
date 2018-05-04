@@ -24,9 +24,9 @@ class SpellManager {
         fireballExplosionEmitter = Emitter(type: "Fire", lifeTime: 0.2, spawnRate: 0.01, maxParticles: 50, position: CGPoint(x: 0.0, y: 0.0), sizeInitial: 10.0, sizeFinal: 10.0, speedInitial: 7.0, speedFinal: 0.7, alphaInitial: 0.9, alphaFinal: 0.4, skScene: skScene)
     }
     
-    func update(deltaTime: Float, position: CGPoint) {
+    func update(deltaTime: Float, position: CGPoint, enemyList: [Enemy]) {
         
-        fireball.update(deltaTime: deltaTime)
+        fireball.update(deltaTime: deltaTime, enemyList: enemyList)
         
         fireballChargingEmitter.isEmitting = false
         fireballMovingEmitter.isEmitting = false
@@ -85,10 +85,10 @@ class Fireball {
     }
     
     convenience init() {
-        self.init(position: CGPoint(x: 0.0, y: 0.0), speed: 600.0, direction: CGPoint(x: 0.0, y: 0.0), size: 10.0, damage: 50.0, effectRadius: 50.0, maxRange: 100.0)
+        self.init(position: CGPoint(x: 0.0, y: 0.0), speed: 600.0, direction: CGPoint(x: 0.0, y: 0.0), size: 10.0, damage: 50.0, effectRadius: 100.0, maxRange: 300.0)
     }
     
-    func update(deltaTime: Float) {
+    func update(deltaTime: Float, enemyList: [Enemy]) {
         if moving {
             let magnitude = sqrt(powf(Float(direction.x), 2) + powf(Float(direction.y), 2))
             
@@ -98,7 +98,7 @@ class Fireball {
             self.position.x += CGFloat(xDisplacement)
             self.position.y -= CGFloat(yDisplacement)
             
-            distanceMoved += magnitude
+            distanceMoved += speed * deltaTime
             
             if self.distanceMoved >= self.maxRange {
                 self.moving = false
@@ -107,7 +107,16 @@ class Fireball {
                 self.distanceMoved = 0
                 self.explosionPosition = self.position
                 // TODO: Apply damage in effect radius now
-                
+                for enemy in enemyList {
+                    self.direction.x = enemy.position.x - self.position.x
+                    self.direction.y = enemy.position.y - self.position.y
+                    
+                    let magnitude = sqrt(powf(Float(direction.x), 2) + powf(Float(direction.y), 2))
+                    
+                    if magnitude < (self.effectRadius + enemy.collisionRadius) {
+                        enemy.dealDamage(damageAmount: self.damage)
+                    }
+                }
             }
         }
         else if exploding {
@@ -117,9 +126,5 @@ class Fireball {
                 self.ready = true
             }
         }
-    }
-    
-    func blowUp() {
-        self.distanceMoved = maxRange
     }
 }

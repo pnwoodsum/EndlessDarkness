@@ -20,7 +20,7 @@ class LevelManager {
     
     init(skScene: SKScene, seed: UInt32) {
         // Create PerlinNoiseObject used to generate chunks for this map
-        perlinNoiseObject = GKNoise(GKPerlinNoiseSource(frequency: 0.10, octaveCount: 3, persistence: 1, lacunarity: 1, seed: Int32(seed)))
+        perlinNoiseObject = GKNoise(GKPerlinNoiseSource(frequency: 0.15, octaveCount: 3, persistence: 2, lacunarity: 0.9, seed: Int32(seed)))
         
         // Load 9 chunks at the start
         level.append(Chunk(position: CGPoint(x: 0.0, y: 0.0), skScene: skScene, collectibleManager: collectibleManager, perlinNoiseObject: perlinNoiseObject!))
@@ -128,33 +128,9 @@ class LevelManager {
         }
     }
     
-    // Used to asynchronously remove the tile sprites from their parent nodes
+    // Originally tried to remove chunks in the background, but ran into some issues
+    // You can ONLY update SKNodes on the main thread
 //    func RemoveChunksBackground(chunkTileWidth: Int) {
-//        if !self.isUpdating {
-//            self.isUpdating = true
-//
-//            let background = DispatchQueue.global()
-//
-//            background.async { [unowned self] in
-//
-//                // keep track of the indices of the tile that is going to be updated
-//                for currentChunkIndex in 0 ..< self.chunksToRemove.count {
-//                    for indexRow in 0 ..< chunkTileWidth {
-//                        for indexCol in 0 ..< chunkTileWidth {
-//
-//                            // Update the chunk information in the mainthread
-//                            DispatchQueue.main.async { [unowned self] in
-//                                self.chunksToRemove[currentChunkIndex].tiles[indexRow][indexCol].tileSpriteNode.removeFromParent()
-//                            }
-//                        }
-//                    }
-//                }
-//                DispatchQueue.main.async { [unowned self] in
-//                    self.chunksToRemove.removeAll()
-//                }
-//                self.isUpdating = false
-//            }
-//        }
 //    }
     
     // Check to see which chunk is at the given point
@@ -315,11 +291,8 @@ struct Tile {
             self.tileSpriteNode = SKSpriteNode(texture: GameData.BackgroundTextures[2])
             pathable = true
             
-            let randomInt = arc4random_uniform(_:20)
-            
             // Adds collectible gold coin on this tile
-            if randomInt < 2 {
-                
+            if noiseValue >= 0.55 && noiseValue < 0.6 {
                 collectibleManager.CreateNewCollectible(type: "GoldCoin", position: position, parentNode: chunkParentNode)
             }
         }

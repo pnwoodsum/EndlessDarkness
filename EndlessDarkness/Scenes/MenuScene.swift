@@ -10,8 +10,8 @@ import SpriteKit
 
 class MenuScene: SKScene {
     
-    var continueButton = SKLabelNode(text: "Continue Game")
-    var newButton = SKLabelNode(text: "New Game")
+    var continueButton = SKLabelNode(text: "Default Seed")
+    var newButton = SKLabelNode(text: "Random Seed")
     var defaultSeed: UInt32 = 546552604
     
     override func didMove(to view: SKView) {

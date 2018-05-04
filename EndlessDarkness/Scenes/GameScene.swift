@@ -84,9 +84,11 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
-        let deltaTime: TimeInterval = currentTime - lastUpdateTimeInterval
+        var deltaTime: TimeInterval = currentTime - lastUpdateTimeInterval
+        if deltaTime > 1000 {
+            deltaTime = Double(0.01)
+        }
         lastUpdateTimeInterval = currentTime
-        
         playerViewPosition = convertPoint(toView: player.position)
         
         playerSprite.position = player.position
@@ -103,11 +105,12 @@ class GameScene: SKScene {
         
         skCamera?.position = player.position
         
-        //enemyManager.spawnEnemies(deltaTime: Float(deltaTime), playerPosition: player.position, skScene: self)
-        //enemyManager.updateEnemies(playerPosition: player.position, deltaTime: Float(deltaTime), otherCollisionRadius: player.collisionRadius)
+        enemyManager.spawnEnemies(deltaTime: Float(deltaTime), playerPosition: player.position, skScene: self)
+        enemyManager.updateEnemies(playerPosition: player.position, deltaTime: Float(deltaTime), otherCollisionRadius: player.collisionRadius)
         
+        // Handles touches on the right side of the screen and spells
         spellManager.fireballCharging = false
-        // Handles touches on the right side of the screen for spells
+        
         if secondTouch {
             secondTouchTimer += Float(deltaTime)
             
@@ -117,8 +120,6 @@ class GameScene: SKScene {
             let yDifference = Float(secondTouchCurrentPosition.y - secondTouchInitialPosition.y)
             
             let magnitude = sqrt(powf(xDifference, 2) + powf(yDifference, 2))
-            print(magnitude)
-            
             
             if (spellManager.fireball.ready) {
                 if magnitude > 100.0 {
@@ -130,7 +131,7 @@ class GameScene: SKScene {
         }
         
         // Update spells
-        spellManager.update(deltaTime: Float(deltaTime), position: player.position)
+        spellManager.update(deltaTime: Float(deltaTime), position: player.position, enemyList: enemyManager.Enemies)
         
         // Handles movement and collisions
         if joystick {

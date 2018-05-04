@@ -1,6 +1,12 @@
 # IGME340_Project2
 A simple ARPG game for IPad/IPhone developed in X-Code using Swift 4
 
+Credits:
+ -https://spin.atomicobject.com/2015/05/03/infinite-procedurally-generated-world/
+          -This was a very helpful tutorial for getting started with procedural generation
+ -https://opengameart.org/content/spinning-gold-coin
+          - The gold coin textures used in the animations for the coins
+
 Controls
   - Tap on the left side of the screen and drag to move character
     - Virtual joystick will be centered where the tap is initially placed.
@@ -16,7 +22,6 @@ Going forward:
   - Character progress (experience through collectibles?)
   - Save Data on close
   - More from initial game doc...
-
 
 Prototype 2:
   - Implemented infinitely generating tile map

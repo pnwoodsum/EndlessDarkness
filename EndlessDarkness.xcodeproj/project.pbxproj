@@ -70,9 +70,9 @@
 			children = (
 				241C0086209B5B340009CBEB /* SpellManager.swift */,
 				241C0088209B5B420009CBEB /* ParticleManager.swift */,
-				3FA24E4E2080184E005BCB4A /* LevelManager.swift */,
 				3FC0C057208990D700BAB11D /* CollectibleManager.swift */,
 				3FC0C05520897E3A00BAB11D /* AnimationManager.swift */,
+				3FA24E4E2080184E005BCB4A /* LevelManager.swift */,
 				241C0084209B5B250009CBEB /* EnemyManager.swift */,
 			);
 			path = Managers;
@@ -85,6 +85,14 @@
 				24CEFA89207C5C1F00F3804E /* GameScene.swift */,
 			);
 			path = Scenes;
+			sourceTree = "<group>";
+		};
+		24AE6DEB209C0066007E7581 /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				3FD45F9B209061A800FF4600 /* MenuViewController.swift */,
+			);
+			path = VC;
 			sourceTree = "<group>";
 		};
 		24CEFA77207C5C1F00F3804E = {
@@ -106,9 +114,9 @@
 		24CEFA82207C5C1F00F3804E /* EndlessDarkness */ = {
 			isa = PBXGroup;
 			children = (
+				24AE6DEB209C0066007E7581 /* VC */,
 				241C0094209BACAB0009CBEB /* Scenes */,
 				241C0093209BAC830009CBEB /* Managers */,
-				3FD45F9B209061A800FF4600 /* MenuViewController.swift */,
 				24CEFA9D207C624300F3804E /* Player.swift */,
 				2469BB95208571AE005067D5 /* GameData.swift */,
 				24CEFA83207C5C1F00F3804E /* AppDelegate.swift */,

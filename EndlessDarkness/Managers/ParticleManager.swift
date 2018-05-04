@@ -147,8 +147,8 @@ class Particle {
             self.particleSpriteNode.setScale(sizeInitial * CGFloat(GameData.GlobalScale))
             skScene.addChild(self.particleSpriteNode)
         case "EnemyParticle":
-            self.particleSpriteNode = SKSpriteNode(texture: GameData.FireTexture)
-            self.particleSpriteNode.zPosition = 1.0
+            self.particleSpriteNode = SKSpriteNode(texture: GameData.EnemyParticle)
+            self.particleSpriteNode.zPosition = 0.98
             self.particleSpriteNode.position = self.position
             self.particleSpriteNode.alpha = CGFloat(alphaInitial)
             self.particleSpriteNode.isHidden = true

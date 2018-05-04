@@ -73,7 +73,7 @@ class Collectible {
             self.animation = Animation(animatedAtlasName: "GoldCoinAnimation", position: position, parentNode: parentNode)
             self.node = (self.animation?.animationNode)!
             self.index = index
-            collisionRadius = 5 * GameData.GlobalScale
+            collisionRadius = 8 * GameData.GlobalScale
             self.itemPosition = position + parentNode.position
             
         default:

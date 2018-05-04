@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		241C0085209B5B250009CBEB /* EnemyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C0084209B5B250009CBEB /* EnemyManager.swift */; };
+		241C0087209B5B340009CBEB /* SpellManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C0086209B5B340009CBEB /* SpellManager.swift */; };
+		241C0089209B5B420009CBEB /* ParticleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C0088209B5B420009CBEB /* ParticleManager.swift */; };
+		241C0090209B750E0009CBEB /* FireTextures.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 241C008F209B750E0009CBEB /* FireTextures.atlas */; };
+		241C0092209BA5DD0009CBEB /* EnemyTextures.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 241C0091209BA5DD0009CBEB /* EnemyTextures.atlas */; };
 		2469BB96208571AE005067D5 /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2469BB95208571AE005067D5 /* GameData.swift */; };
 		24CEFA84207C5C1F00F3804E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA83207C5C1F00F3804E /* AppDelegate.swift */; };
 		24CEFA8A207C5C1F00F3804E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA89207C5C1F00F3804E /* GameScene.swift */; };
-		24CEFA8C207C5C1F00F3804E /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CEFA8B207C5C1F00F3804E /* GameViewController.swift */; };
 		24CEFA8F207C5C1F00F3804E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 24CEFA8D207C5C1F00F3804E /* Main.storyboard */; };
 		24CEFA91207C5C1F00F3804E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 24CEFA90207C5C1F00F3804E /* Assets.xcassets */; };
 		24CEFA94207C5C1F00F3804E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 24CEFA92207C5C1F00F3804E /* LaunchScreen.storyboard */; };
@@ -26,11 +30,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		241C0084209B5B250009CBEB /* EnemyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnemyManager.swift; sourceTree = "<group>"; };
+		241C0086209B5B340009CBEB /* SpellManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellManager.swift; sourceTree = "<group>"; };
+		241C0088209B5B420009CBEB /* ParticleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleManager.swift; sourceTree = "<group>"; };
+		241C008F209B750E0009CBEB /* FireTextures.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = FireTextures.atlas; sourceTree = "<group>"; };
+		241C0091209BA5DD0009CBEB /* EnemyTextures.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = EnemyTextures.atlas; sourceTree = "<group>"; };
 		2469BB95208571AE005067D5 /* GameData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
 		24CEFA80207C5C1F00F3804E /* EndlessDarkness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EndlessDarkness.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24CEFA83207C5C1F00F3804E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24CEFA89207C5C1F00F3804E /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		24CEFA8B207C5C1F00F3804E /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		24CEFA8E207C5C1F00F3804E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		24CEFA90207C5C1F00F3804E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24CEFA93207C5C1F00F3804E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -57,6 +65,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		241C0093209BAC830009CBEB /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				241C0086209B5B340009CBEB /* SpellManager.swift */,
+				241C0088209B5B420009CBEB /* ParticleManager.swift */,
+				3FC0C057208990D700BAB11D /* CollectibleManager.swift */,
+				3FC0C05520897E3A00BAB11D /* AnimationManager.swift */,
+				3FA24E4E2080184E005BCB4A /* LevelManager.swift */,
+				241C0084209B5B250009CBEB /* EnemyManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		241C0094209BACAB0009CBEB /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				3FD45F992090615900FF4600 /* MenuScene.swift */,
+				24CEFA89207C5C1F00F3804E /* GameScene.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		24AE6DEB209C0066007E7581 /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				3FD45F9B209061A800FF4600 /* MenuViewController.swift */,
+			);
+			path = VC;
+			sourceTree = "<group>";
+		};
 		24CEFA77207C5C1F00F3804E = {
 			isa = PBXGroup;
 			children = (
@@ -76,18 +114,16 @@
 		24CEFA82207C5C1F00F3804E /* EndlessDarkness */ = {
 			isa = PBXGroup;
 			children = (
-				24CEFA83207C5C1F00F3804E /* AppDelegate.swift */,
-				3FD45F992090615900FF4600 /* MenuScene.swift */,
-				3FD45F9B209061A800FF4600 /* MenuViewController.swift */,
-				24CEFA89207C5C1F00F3804E /* GameScene.swift */,
-				3FA24E4E2080184E005BCB4A /* LevelManager.swift */,
-				3FC0C057208990D700BAB11D /* CollectibleManager.swift */,
-				3FC0C05520897E3A00BAB11D /* AnimationManager.swift */,
-				24CEFA8B207C5C1F00F3804E /* GameViewController.swift */,
+				24AE6DEB209C0066007E7581 /* VC */,
+				241C0094209BACAB0009CBEB /* Scenes */,
+				241C0093209BAC830009CBEB /* Managers */,
 				24CEFA9D207C624300F3804E /* Player.swift */,
 				2469BB95208571AE005067D5 /* GameData.swift */,
+				24CEFA83207C5C1F00F3804E /* AppDelegate.swift */,
 				24CEFA8D207C5C1F00F3804E /* Main.storyboard */,
 				24CEFA90207C5C1F00F3804E /* Assets.xcassets */,
+				241C0091209BA5DD0009CBEB /* EnemyTextures.atlas */,
+				241C008F209B750E0009CBEB /* FireTextures.atlas */,
 				3F623C1A2089AE3200FC4325 /* RockTextures.atlas */,
 				3FC0C05320897D2600BAB11D /* GoldCoinAnimation.atlas */,
 				3FB3C1642089530F0083F6EB /* BackgroundTextures.atlas */,
@@ -156,12 +192,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				241C0092209BA5DD0009CBEB /* EnemyTextures.atlas in Resources */,
 				24CEFA8F207C5C1F00F3804E /* Main.storyboard in Resources */,
 				24CEFA91207C5C1F00F3804E /* Assets.xcassets in Resources */,
 				3FC0C05420897D2600BAB11D /* GoldCoinAnimation.atlas in Resources */,
 				24CEFA94207C5C1F00F3804E /* LaunchScreen.storyboard in Resources */,
 				3F623C1B2089AE3200FC4325 /* RockTextures.atlas in Resources */,
 				3FB3C1652089530F0083F6EB /* BackgroundTextures.atlas in Resources */,
+				241C0090209B750E0009CBEB /* FireTextures.atlas in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,12 +210,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				241C0087209B5B340009CBEB /* SpellManager.swift in Sources */,
 				3FC0C058208990D700BAB11D /* CollectibleManager.swift in Sources */,
 				24CEFA8A207C5C1F00F3804E /* GameScene.swift in Sources */,
-				24CEFA8C207C5C1F00F3804E /* GameViewController.swift in Sources */,
 				3FD45F9C209061A800FF4600 /* MenuViewController.swift in Sources */,
+				241C0089209B5B420009CBEB /* ParticleManager.swift in Sources */,
 				24CEFA9E207C624300F3804E /* Player.swift in Sources */,
 				3FC0C05620897E3A00BAB11D /* AnimationManager.swift in Sources */,
+				241C0085209B5B250009CBEB /* EnemyManager.swift in Sources */,
 				2469BB96208571AE005067D5 /* GameData.swift in Sources */,
 				3FD45F9A2090615900FF4600 /* MenuScene.swift in Sources */,
 				3FA24E4F2080184E005BCB4A /* LevelManager.swift in Sources */,

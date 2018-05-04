@@ -9,6 +9,7 @@
 import Foundation
 import SpriteKit
 
+// Create a reusable animation with one simple constructor!
 class Animation {
     var animationNode: SKSpriteNode
     var animationFrames: [SKTexture] = []

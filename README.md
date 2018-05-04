@@ -9,7 +9,7 @@ Credits:
 
 Controls
   - Tap on the left side of the screen and drag to move character
-    - Virtual joystick will be centered where the tap is initially placed.
+  - Swipe on the right side of the screen to throw a fireball
 
 Prototype 1:
   - Has a virtual joy stick to move the character.
